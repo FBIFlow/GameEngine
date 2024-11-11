@@ -12,9 +12,7 @@ public class QueueService {
     }
 
     public boolean isPlayerInQueue(Player player) {
-        for (int i = 0; i < queue.length; i++) {
-            queue[i].
-        }
+        return false;
     }
 
     public void addToQueue(Player player) {

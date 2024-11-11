@@ -3,6 +3,9 @@ package me.fbiflow.gameengine.model.queue;
 import me.fbiflow.gameengine.model.game.Game;
 import me.fbiflow.gameengine.model.wrapper.Player;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 public class QueueUnit {
 
     private Player owner;
@@ -11,13 +14,21 @@ public class QueueUnit {
 
     public QueueUnit(Class<? extends Game> game) {
         this.game = game;
-        this.players = new Player[game.countOfPlayer()];
+        this.players = new Player[getMaxPlayers(game)];
     }
 
     public QueueUnit(Class<? extends Game> game, Player owner) {
         this.owner = owner;
         this.game = game;
-        this.players = new Player[game.countOfPlayer()];
+        this.players = new Player[getMaxPlayers(game)];
+    }
+
+    private int getMaxPlayers(Class<? extends Game> game) {
+        try {
+            return (int) game.getMethod("getMaxPlayers").invoke(game);
+        } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }
