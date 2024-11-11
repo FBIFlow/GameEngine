@@ -27,7 +27,7 @@ public class QueueService {
         }
         return count;
     }
-
+//
     public void addToQueue(Player player, Class<? extends Game> gameType) {
         if (isPlayerInQueue(player)) {
             System.out.println("player is already in queue");
