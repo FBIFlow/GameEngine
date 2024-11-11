@@ -23,6 +23,17 @@ public class QueueUnit {
         this.players = new Player[getMaxPlayers(game)];
     }
 
+    public Player getOwner() {
+		return this.owner;
+    } 
+
+	public Game getGame() {
+        return this.game;
+    } 
+
+
+
+
     private int getMaxPlayers(Class<? extends Game> game) {
         try {
             return (int) game.getMethod("getMaxPlayers").invoke(game);
