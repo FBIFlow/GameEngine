@@ -27,12 +27,13 @@ public class QueueUnit {
 		return this.owner;
     } 
 
-	public Game getGame() {
+    public Game getGame() {
         return this.game;
+    }
+
+    public int getMaxPlayers() {
+	return this.players.length;
     } 
-
-
-
 
     private int getMaxPlayers(Class<? extends Game> game) {
         try {
