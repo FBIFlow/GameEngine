@@ -16,12 +16,10 @@ public class QueueService {
         this.queue = new ArrayList<>();
     }
 
-    @Deprecated
     public List<QueueUnit> getQueue() {
         return this.queue;
     }
 
-    @Deprecated
     public int getUsersInQueue() {
         int count = 0;
         for (QueueUnit unit : queue) {
