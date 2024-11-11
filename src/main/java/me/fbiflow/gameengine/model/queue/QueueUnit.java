@@ -24,7 +24,7 @@ public class QueueUnit {
     }
 
     public Player getOwner() {
-		return this.owner;
+	return this.owner;
     } 
 
     public Game getGame() {
