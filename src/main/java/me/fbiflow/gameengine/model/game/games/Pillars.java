@@ -4,8 +4,9 @@ import me.fbiflow.gameengine.model.game.Game;
 
 public class Pillars extends Game {
 
-    static {
-        setMaxPlayers(10);
+    @Override
+    public int getMaxPlayers() {
+        return 8;
     }
 
     @Override
