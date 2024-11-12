@@ -1,7 +1,7 @@
-package me.fbiflow.gameengine.service;
+package me.fbiflow.gameengine.service.consumer;
 
 import me.fbiflow.gameengine.model.game.Game;
-import me.fbiflow.gameengine.model.queue.QueueUnit;
+import me.fbiflow.gameengine.model.QueueUnit;
 import me.fbiflow.gameengine.model.wrapper.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -27,7 +27,7 @@ public class QueueService {
         }
         return count;
     }
-//
+
     public void addToQueue(Player player, Class<? extends Game> gameType) {
         if (isPlayerInQueue(player)) {
             System.out.println("player is already in queue");

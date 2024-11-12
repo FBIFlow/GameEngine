@@ -1,10 +1,9 @@
 package me.fbiflow.test;
 
 import me.fbiflow.gameengine.model.game.games.Pillars;
-import me.fbiflow.gameengine.model.queue.QueueUnit;
-import me.fbiflow.gameengine.service.QueueService;
+import me.fbiflow.gameengine.model.QueueUnit;
+import me.fbiflow.gameengine.service.consumer.QueueService;
 
-import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Scanner;
 
