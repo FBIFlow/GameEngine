@@ -73,7 +73,7 @@ public class QueueUnit {
 
     @Override
     public String toString() {
-        return String.format("QueueUnit:\n{\n\ttype : %s\n\towner : %s \n\tplayers : %s\n}", this.gameType.getName(), this.owner, this.players);
+        return String.format("QueueUnit:\n{\n\tpacketType : %s\n\towner : %s \n\tplayers : %s\n}", this.gameType.getName(), this.owner, this.players);
     }
 
 }

@@ -3,17 +3,23 @@ package me.fbiflow.gameengine.service.consumer;
 import me.fbiflow.gameengine.model.game.Game;
 import me.fbiflow.gameengine.model.QueueUnit;
 import me.fbiflow.gameengine.model.wrapper.Player;
+import me.fbiflow.gameengine.service.transfer.DataReceiver;
+import me.fbiflow.gameengine.service.transfer.DataSender;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class QueueService {
+public class ConsumerService {
 
-    private List<QueueUnit> queue;
+    private final List<QueueUnit> queue = new ArrayList<>();
 
-    public QueueService() {
-        this.queue = new ArrayList<>();
+    private final DataSender dataSender;
+    private final DataReceiver dataReceiver;
+
+    public ConsumerService(DataSender dataSender, DataReceiver dataReceiver) {
+        this.dataReceiver = dataReceiver;
+        this.dataSender = dataSender;
     }
 
     public List<QueueUnit> getQueue() {
