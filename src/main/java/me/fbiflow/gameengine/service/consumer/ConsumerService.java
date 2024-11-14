@@ -1,6 +1,5 @@
 package me.fbiflow.gameengine.service.consumer;
 
-import me.fbiflow.gameengine.model.;
 import me.fbiflow.gameengine.model.game.Game;
 import me.fbiflow.gameengine.model.QueueUnit;
 import me.fbiflow.gameengine.model.wrapper.Player;
