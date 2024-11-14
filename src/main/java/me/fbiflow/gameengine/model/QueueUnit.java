@@ -1,5 +1,6 @@
 package me.fbiflow.gameengine.model;
 
+import com.google.common.base.MoreObjects;
 import me.fbiflow.gameengine.model.game.Game;
 import me.fbiflow.gameengine.model.wrapper.Player;
 
@@ -56,6 +57,12 @@ public class QueueUnit {
         players.add(player);
     }
 
+    public void removePlayer(Player player) {
+        if (getPlayersCount() == 1) {
+            players.remove(player);
+        }
+    }
+
     public boolean contains(Player player) {
         return players.contains(player);
     }
@@ -73,7 +80,28 @@ public class QueueUnit {
 
     @Override
     public String toString() {
-        return String.format("QueueUnit:\n{\n\tpacketType : %s\n\towner : %s \n\tplayers : %s\n}", this.gameType.getName(), this.owner, this.players);
+        return MoreObjects.toStringHelper(this)
+                .add("gameType", gameType)
+                .add("owner", owner)
+                .add("players", players)
+                .add("maxPlayers", maxPlayers)
+                .toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        QueueUnit queueUnit = (QueueUnit) o;
+        return maxPlayers == queueUnit.maxPlayers
+                && Objects.equals(gameType, queueUnit.gameType)
+                && Objects.equals(owner, queueUnit.owner)
+                && Objects.equals(players, queueUnit.players);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(gameType, owner, players, maxPlayers);
     }
 
 }

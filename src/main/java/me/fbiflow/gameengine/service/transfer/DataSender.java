@@ -1,6 +1,6 @@
 package me.fbiflow.gameengine.service.transfer;
 
-import me.fbiflow.gameengine.model.transfer.Packet;
+import me.fbiflow.gameengine.model.transfer.packet.Packet;
 
 public interface DataSender {
 

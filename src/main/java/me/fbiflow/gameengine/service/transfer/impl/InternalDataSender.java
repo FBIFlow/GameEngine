@@ -1,6 +1,6 @@
 package me.fbiflow.gameengine.service.transfer.impl;
 
-import me.fbiflow.gameengine.model.transfer.Packet;
+import me.fbiflow.gameengine.model.transfer.packet.Packet;
 import me.fbiflow.gameengine.service.transfer.DataReceiver;
 import me.fbiflow.gameengine.service.transfer.DataSender;
 

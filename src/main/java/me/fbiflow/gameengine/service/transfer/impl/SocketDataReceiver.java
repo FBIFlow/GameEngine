@@ -6,13 +6,13 @@ import me.fbiflow.gameengine.service.transfer.DataReceiver;
 import java.util.ArrayList;
 import java.util.List;
 
-public class InternalDataReceiver extends DataReceiver {
+public class SocketDataReceiver extends DataReceiver {
 
     private final List<Packet> dataList = new ArrayList<>();
 
     @Override
     public Packet getData() {
-        return dataList.removeFirst();
+        return null;
     }
 
     @Override

@@ -1,11 +1,13 @@
 package me.fbiflow.gameengine.service.transfer;
 
-import me.fbiflow.gameengine.model.transfer.Packet;
+import me.fbiflow.gameengine.model.transfer.packet.Packet;
 
-public interface DataReceiver {
+public abstract class DataReceiver {
 
-    Packet getData();
+    public abstract Packet getData();
 
-    void putData(Packet data);
+    public abstract void setup();
+
+    public abstract void onDataReceive(Packet packet);
 
 }
