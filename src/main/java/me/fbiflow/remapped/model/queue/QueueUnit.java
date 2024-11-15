@@ -4,7 +4,6 @@ import com.google.common.base.MoreObjects;
 import me.fbiflow.remapped.model.game.Game;
 import me.fbiflow.remapped.model.wrapper.internal.Player;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -17,28 +16,18 @@ public class QueueUnit {
     private Class<? extends Game> gameType;
     private Player owner;
     private int maxPlayers = 48;
+    private boolean registered;
 
     {
         this.uuid = UUID.randomUUID();
         this.members = new ArrayList<>();
     }
 
-    protected QueueUnit(Class<? extends Game> gameType, Player owner) {
-        setGameType(gameType);
-        this.owner = owner;
-        this.members.add(owner);
+    protected static QueueUnit newInstance() {
+        return new QueueUnit();
     }
 
-    protected QueueUnit(Class<? extends Game> gameType) {
-        setGameType(gameType);
-    }
-
-    protected QueueUnit(Player owner) {
-        this.owner = owner;
-        this.members.add(owner);
-    }
-
-    protected QueueUnit() {
+    private QueueUnit() {
 
     }
 
@@ -93,6 +82,18 @@ public class QueueUnit {
             throw new RuntimeException("Player should be member of QueueUnit to be owner");
         }
         this.owner = owner;
+    }
+
+    public int getMaxPlayers() {
+        return this.maxPlayers;
+    }
+
+    public boolean isRegistered() {
+        return this.registered;
+    }
+
+    public void setRegistered(boolean registered) {
+        this.registered = registered;
     }
 
     @Override
