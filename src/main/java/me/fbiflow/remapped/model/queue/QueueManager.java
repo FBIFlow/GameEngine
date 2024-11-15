@@ -1,7 +1,8 @@
 package me.fbiflow.remapped.model.queue;
 
-import me.fbiflow.remapped.model.exceptions.PlayerNotInQueueException;
 import me.fbiflow.remapped.model.game.Game;
+import me.fbiflow.remapped.model.party.Party;
+import me.fbiflow.remapped.model.party.PartyManager;
 import me.fbiflow.remapped.model.wrapper.internal.Player;
 import org.jetbrains.annotations.Nullable;
 
@@ -9,122 +10,134 @@ import java.util.ArrayList;
 
 public class QueueManager {
 
-    private final ArrayList<QueueUnit> queue;
+    private final ArrayList<QueueItem> queue;
+    private final PartyManager partyManager;
 
-    public QueueManager() {
+    public QueueManager(PartyManager partyManager) {
         this.queue = new ArrayList<>();
+        this.partyManager = partyManager;
     }
 
     /**
-     * Add QueueUnit to queue
-     * @param queueUnit QueueUnit to add
+     * Add player to queue, try find existing QueueItem or create new
+     * @param player who joins
+     * @param gameType type of required game
      */
-    private void addQueueUnitToQueue(QueueUnit queueUnit) {
-        if (queue.contains(queueUnit)) {
-            throw new RuntimeException("QueueUnit already in queue");
+    public void joinQueue(Player player, Class<? extends Game> gameType) {
+        if (!partyManager.isPlayerInParty(player)) {
+            QueueItem queueItem = getFreeQueueItem(gameType);
+            if (queueItem == null) {
+                queueItem = createQueueItem();
+                queueItem.setGameType(gameType);
+            }
+            queueItem.getMembers().add(player);
+            return;
         }
-        queue.add(queueUnit);
-    }
-
-    /**
-     * Remove QueueUnit from queue
-     * @param queueUnit QueueUnit to remove
-     */
-    private void removeQueueUnitFromQueue(QueueUnit queueUnit) {
-        if (!queue.contains(queueUnit)) {
-            throw new RuntimeException("QueueUnit isn`t in queue");
+        Party party = partyManager.getByMember(player);
+        if (party.getOwner() != player) {
+            //TODO: send message (only owner can start queue)
+            return;
         }
-        queue.remove(queueUnit);
-    }
+        if () {
 
-    /**
-     * Create new instance of QueueUnit and add it to queue
-     * @return created instance of QueueUnit
-     */
-    private QueueUnit createQueueUnit() {
-        QueueUnit queueUnit = QueueUnit.newInstance();
-        addQueueUnitToQueue(queueUnit);
-        return queueUnit;
+        }
     }
 
     /**
      * Remove player from queue
      * @param player who leaves
      */
-    private void leaveQueue(Player player) {
-        QueueUnit queueUnit = getPlayerQueueUnit(player);
-        if (queueUnit == null) {
-            throw new PlayerNotInQueueException();
-        }
-
-        queueUnit.removeMember(player);
-
-        if (queueUnit.isEmpty()) {
-            removeQueueUnitFromQueue(queueUnit);
+    public void leaveQueue(Player player) {
+        QueueItem queueItem = getPlayerQueueItem(player);
+        if (queueItem == null) {
             return;
         }
 
-        if (queueUnit.isOwner(player)) {
-            queueUnit.setOwner(queueUnit.getMembers().getFirst());
+        queueItem.getMembers().remove(player);
+
+        if (queueItem.isEmpty()) {
+            removeQueueItemFromQueue(queueItem);
+            return;
         }
 
+        if (queueItem.isOwner(player)) {
+            queueItem.setOwner(queueItem.getMembers().getFirst());
+        }
     }
 
     /**
-     * Add player to queue, try find existing QueueUnit or create new
-     * @param player who joins
-     * @param gameType type of required game
+     * Add QueueItem to queue
+     * @param queueItem QueueItem to add
      */
-    private void joinQueue(Player player, Class<? extends Game> gameType) {
-        QueueUnit queueUnit = getFreeQueueUnit(gameType);
-        if (queueUnit == null) {
-            queueUnit = createQueueUnit();
-            queueUnit.setGameType(gameType);
+    private void addQueueItemToQueue(QueueItem queueItem) {
+        if (queue.contains(queueItem)) {
+            throw new RuntimeException("QueueItem already in queue");
         }
-        queueUnit.addMember(player);
+        queue.add(queueItem);
     }
 
     /**
-     * Find QueueUnit with specified game type and existing slot for player
+     * Create new instance of QueueItem and add it to queue
+     * @return created instance of QueueItem
+     */
+    private QueueItem createQueueItem() {
+        QueueItem queueItem = QueueItem.newInstance();
+        addQueueItemToQueue(queueItem);
+        return queueItem;
+    }
+
+    /**
+     * Remove QueueItem from queue
+     * @param queueItem QueueItem to remove
+     */
+    private void removeQueueItemFromQueue(QueueItem queueItem) {
+        if (!queue.contains(queueItem)) {
+            throw new RuntimeException("QueueItem isn`t in queue");
+        }
+        queue.remove(queueItem);
+    }
+
+    /**
+     * Find QueueItem with specified game type and existing slot for player
      * @param gameType type of game
-     * @return QueueUnit if exists
+     * @return QueueItem if exists
      */
     @Nullable
-    private QueueUnit getFreeQueueUnit(Class<? extends Game> gameType) {
-        for (QueueUnit queueUnit : queue) {
-            if (!queueUnit.isFull() && queueUnit.getGameType() == gameType) {
-                return queueUnit;
+    private QueueItem getFreeQueueItem(Class<? extends Game> gameType) {
+        for (QueueItem queueItem : queue) {
+            if (!queueItem.isFull() && queueItem.getGameType() == gameType) {
+                return queueItem;
             }
         }
         return null;
     }
 
     /**
-     * Find QueueUnit with specified game type and existing slots for players
+     * Find QueueItem with specified game type and existing slots for players
      * @param gameType type of game
      * @param freeSlots count of free slots
-     * @return QueueUnit if exists
+     * @return QueueItem if exists
      */
     @Nullable
-    private QueueUnit getFreeQueueUnit(Class<? extends Game> gameType, int freeSlots) {
-        for (QueueUnit queueUnit : queue) {
-            if (queueUnit.getMembers().size() + freeSlots <= queueUnit.getMaxPlayers() && queueUnit.getGameType() == gameType) {
-                return queueUnit;
+    private QueueItem getFreeQueueItem(Class<? extends Game> gameType, int freeSlots) {
+        for (QueueItem queueItem : queue) {
+            if (queueItem.getMembers().size() + freeSlots <= queueItem.getMaxPlayers() && queueItem.getGameType() == gameType) {
+                return queueItem;
             }
         }
         return null;
     }
 
     /**
-     * Find QueueUnit by Player
-     * @param player who`s QueueUnit to find
-     * @return QueueUnit in which player or null if player isn`t in queue
+     * Find QueueItem by Player
+     * @param player who`s QueueItem to find
+     * @return QueueItem in which player or null if player isn`t in queue
      */
     @Nullable
-    private QueueUnit getPlayerQueueUnit(Player player) {
-        for (QueueUnit queueUnit : queue) {
-            if (queueUnit.getMembers().contains(player)) {
-                return queueUnit;
+    private QueueItem getPlayerQueueItem(Player player) {
+        for (QueueItem queueItem : queue) {
+            if (queueItem.getMembers().contains(player)) {
+                return queueItem;
             }
         }
         return null;

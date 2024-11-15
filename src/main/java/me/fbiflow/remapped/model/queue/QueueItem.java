@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class QueueUnit {
+public class QueueItem {
 
     private final UUID uuid;
     private final List<Player> members;
@@ -23,11 +23,11 @@ public class QueueUnit {
         this.members = new ArrayList<>();
     }
 
-    protected static QueueUnit newInstance() {
-        return new QueueUnit();
+    protected static QueueItem newInstance() {
+        return new QueueItem();
     }
 
-    private QueueUnit() {
+    private QueueItem() {
 
     }
 
@@ -45,14 +45,6 @@ public class QueueUnit {
 
     protected List<Player> getMembers() {
         return this.members;
-    }
-
-    protected void addMember(Player player) {
-        members.add(player);
-    }
-
-    protected void removeMember(Player player) {
-        members.remove(player);
     }
 
     protected Class<? extends Game> getGameType() {
@@ -84,15 +76,15 @@ public class QueueUnit {
         this.owner = owner;
     }
 
-    public int getMaxPlayers() {
+    protected int getMaxPlayers() {
         return this.maxPlayers;
     }
 
-    public boolean isRegistered() {
+    protected boolean isRegistered() {
         return this.registered;
     }
 
-    public void setRegistered(boolean registered) {
+    protected void setRegistered(boolean registered) {
         this.registered = registered;
     }
 
