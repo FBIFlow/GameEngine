@@ -10,12 +10,12 @@ public class PartyManager {
     private final List<Party> parties;
 
     private Map<Player, List<Player>> invites;
-    private Map<Player, Player> lastInvited;
+    private Map<Player, Player> lastInvitedBy;
 
     public PartyManager() {
         this.parties = new ArrayList<>();
         this.invites = new HashMap<>();
-        this.lastInvited = new HashMap<>();
+        this.lastInvitedBy = new HashMap<>();
     }
 
     /**
@@ -85,6 +85,7 @@ public class PartyManager {
      */
     public void addInvite(Player sender, Player invited) {
         List<Player> invitedPlayers = Optional.ofNullable(invites.get(sender)).orElse(List.of(invited));
+        lastInvitedBy.put(invited, sender);
         invites.put(sender, invitedPlayers);
         //TODO: send message
     }
@@ -95,7 +96,7 @@ public class PartyManager {
      * @param sender  who invited
      */
     public void acceptInvite(Player invited, @Nullable Player sender) {
-        Party party = sender != null ? getByOwner(sender) : getByOwner(lastInvited.remove(invited));
+        Party party = sender != null ? getByOwner(sender) : getByOwner(lastInvitedBy.remove(invited));
         if (party == null) {
             //TODO: send message
             return;
@@ -113,6 +114,9 @@ public class PartyManager {
     public void removeInvite(Player sender, Player invited) {
         List<Player> invitedPlayers = invites.get(sender);
         invitedPlayers.remove(invited);
+        if (lastInvitedBy.get(invited) == sender) {
+            lastInvitedBy.remove(invited);
+        }
         //TODO: send message (isn`t invited now)
     }
 
@@ -121,6 +125,11 @@ public class PartyManager {
      * @param sender who created invites
      */
     public void removeInvites(Player sender) {
+        for (Player invited : lastInvitedBy.keySet()) {
+            if (lastInvitedBy.get(invited) == sender) {
+                lastInvitedBy.remove(invited);
+            }
+        }
         invites.remove(sender);
     }
 

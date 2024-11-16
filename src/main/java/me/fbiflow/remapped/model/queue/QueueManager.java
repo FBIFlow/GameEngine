@@ -85,13 +85,31 @@ public class QueueManager {
         QueueItem queueItem = getPlayerQueueItem(player);
         if (queueItem == null) {
             return;
+            //TODO: send message (not in queue)
+        }
+        Party party = partyManager.getByMember(player);
+        if (party != null) {
+            if (party.getOwner() != player) {
+                partyManager.leaveParty(player);
+                queueItem.getMembers().remove(player);
+                //TODO: send message (leave party and queue)
+            } else {
+                Player owner = party.getOwner();
+                List<Player> partyMembers = party.getMembersCopy();
+                partyMembers.remove(owner);
+
+                queueItem.getMembers().remove(owner);
+                //TODO: send message (owner leave and all players)
+                for (Player p : partyMembers) {
+                    queueItem.getMembers().remove(p);
+                    //TODO: send message (leave queue because of owner)
+                }
+            }
         }
 
-        queueItem.getMembers().remove(player);
 
         if (queueItem.isEmpty()) {
             removeQueueItemFromQueue(queueItem);
-            return;
         }
     }
 
