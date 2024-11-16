@@ -39,7 +39,7 @@ public class QueueItem {
     }
 
     protected boolean isFull() {
-        return members.size() >= maxPlayers;
+        return members.size() == maxPlayers;
     }
 
     protected List<Player> getMembers() {
