@@ -1,12 +1,15 @@
 package me.fbiflow.remapped.model.queue;
 
-import me.fbiflow.remapped.model.game.Game;
+import me.fbiflow.remapped.model.game.AbstractGame;
+import me.fbiflow.remapped.model.game.GameManager;
 import me.fbiflow.remapped.model.party.Party;
 import me.fbiflow.remapped.model.party.PartyManager;
 import me.fbiflow.remapped.model.wrapper.internal.Player;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class QueueManager {
 
@@ -20,10 +23,11 @@ public class QueueManager {
 
     /**
      * Add player to queue, try find existing QueueItem or create new
-     * @param player who joins
+     *
+     * @param player   who joins
      * @param gameType type of required game
      */
-    public void joinQueue(Player player, Class<? extends Game> gameType) {
+    public QueueItem joinQueue(Player player, Class<? extends AbstractGame> gameType) {
         if (!partyManager.isPlayerInParty(player)) {
             QueueItem queueItem = getFreeQueueItem(gameType);
             if (queueItem == null) {
@@ -31,20 +35,50 @@ public class QueueManager {
                 queueItem.setGameType(gameType);
             }
             queueItem.getMembers().add(player);
-            return;
+            //TODO: send message (player joined)
+            return queueItem;
         }
         Party party = partyManager.getByMember(player);
         if (party.getOwner() != player) {
             //TODO: send message (only owner can start queue)
-            return;
+            return null;
         }
-        if () {
-
+        Map<String, Integer> maxPartyPlayersMap = GameManager.getMaxPartyPlayers(gameType);
+        int allowedPartyPlayers = 0;
+        for (String permission : party.getPermissionLevel()) {
+            if (maxPartyPlayersMap.get(permission) == null) {
+                continue;
+            }
+            int val = maxPartyPlayersMap.get(permission);
+            if (val > allowedPartyPlayers) {
+                allowedPartyPlayers = val;
+            }
         }
+        List<Player> partyMembers = party.getMembersCopy();
+        int partyMembersCount = partyMembers.size();
+        if (partyMembersCount > GameManager.getMaxPlayers(gameType)) {
+            //TODO: send message (too many players to this game)
+            return null;
+        }
+        if (partyMembersCount > allowedPartyPlayers) {
+            //TODO: send message (too many players in party)
+            return null;
+        }
+        QueueItem queueItem = getFreeQueueItem(gameType, partyMembersCount);
+        if (queueItem == null) {
+            queueItem = createQueueItem();
+            queueItem.setGameType(gameType);
+        }
+        for (Player p : partyMembers) {
+            queueItem.getMembers().add(p);
+            //TODO: send message (player joined)
+        }
+        return queueItem;
     }
 
     /**
      * Remove player from queue
+     *
      * @param player who leaves
      */
     public void leaveQueue(Player player) {
@@ -59,14 +93,11 @@ public class QueueManager {
             removeQueueItemFromQueue(queueItem);
             return;
         }
-
-        if (queueItem.isOwner(player)) {
-            queueItem.setOwner(queueItem.getMembers().getFirst());
-        }
     }
 
     /**
      * Add QueueItem to queue
+     *
      * @param queueItem QueueItem to add
      */
     private void addQueueItemToQueue(QueueItem queueItem) {
@@ -78,6 +109,7 @@ public class QueueManager {
 
     /**
      * Create new instance of QueueItem and add it to queue
+     *
      * @return created instance of QueueItem
      */
     private QueueItem createQueueItem() {
@@ -88,6 +120,7 @@ public class QueueManager {
 
     /**
      * Remove QueueItem from queue
+     *
      * @param queueItem QueueItem to remove
      */
     private void removeQueueItemFromQueue(QueueItem queueItem) {
@@ -99,11 +132,12 @@ public class QueueManager {
 
     /**
      * Find QueueItem with specified game type and existing slot for player
+     *
      * @param gameType type of game
      * @return QueueItem if exists
      */
     @Nullable
-    private QueueItem getFreeQueueItem(Class<? extends Game> gameType) {
+    private QueueItem getFreeQueueItem(Class<? extends AbstractGame> gameType) {
         for (QueueItem queueItem : queue) {
             if (!queueItem.isFull() && queueItem.getGameType() == gameType) {
                 return queueItem;
@@ -114,14 +148,15 @@ public class QueueManager {
 
     /**
      * Find QueueItem with specified game type and existing slots for players
-     * @param gameType type of game
+     *
+     * @param gameType  type of game
      * @param freeSlots count of free slots
      * @return QueueItem if exists
      */
     @Nullable
-    private QueueItem getFreeQueueItem(Class<? extends Game> gameType, int freeSlots) {
+    private QueueItem getFreeQueueItem(Class<? extends AbstractGame> gameType, int freeSlots) {
         for (QueueItem queueItem : queue) {
-            if (queueItem.getMembers().size() + freeSlots <= queueItem.getMaxPlayers() && queueItem.getGameType() == gameType) {
+            if (queueItem.getGameType() == gameType && queueItem.getMembers().size() + freeSlots <= queueItem.getMaxPlayers()) {
                 return queueItem;
             }
         }
@@ -130,6 +165,7 @@ public class QueueManager {
 
     /**
      * Find QueueItem by Player
+     *
      * @param player who`s QueueItem to find
      * @return QueueItem in which player or null if player isn`t in queue
      */

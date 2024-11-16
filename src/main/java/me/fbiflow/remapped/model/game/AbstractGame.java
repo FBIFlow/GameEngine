@@ -2,7 +2,7 @@ package me.fbiflow.remapped.model.game;
 
 import java.util.Map;
 
-public abstract class Game {
+public abstract class AbstractGame {
 
     public abstract int getMaxPlayers();
 

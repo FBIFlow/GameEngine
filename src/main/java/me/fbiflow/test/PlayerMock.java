@@ -1,6 +1,7 @@
 package me.fbiflow.test;
 
-import me.fbiflow.gameengine.model.wrapper.Player;
+
+import me.fbiflow.remapped.model.wrapper.internal.Player;
 
 import java.util.*;
 
@@ -32,6 +33,11 @@ public class PlayerMock implements Player {
     @Override
     public String getName() {
         return this.name;
+    }
+
+    @Override
+    public List<String> getPermissions() {
+        return List.of("default");
     }
 
     @Override

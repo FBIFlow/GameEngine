@@ -1,6 +1,7 @@
 package me.fbiflow.remapped.model.wrapper.bukkit;
 
 import me.fbiflow.remapped.model.wrapper.internal.Player;
+import org.bukkit.permissions.PermissionAttachmentInfo;
 
 import java.util.List;
 
@@ -18,7 +19,7 @@ public class BukkitPlayer implements Player {
     }
 
     @Override
-    public List<String> getPartyPermissions() {
-
+    public List<String> getPermissions() {
+        return player.getEffectivePermissions().stream().map(PermissionAttachmentInfo::getPermission).toList();
     }
 }

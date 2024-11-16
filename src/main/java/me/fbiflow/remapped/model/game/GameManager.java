@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class GameManager {
 
-    public static int getMaxPlayers(Class<? extends Game> gameType) {
+    public static int getMaxPlayers(Class<? extends AbstractGame> gameType) {
         try {
             return gameType.getConstructor().newInstance().getMaxPlayers();
         } catch (InstantiationException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
@@ -13,7 +13,7 @@ public class GameManager {
         }
     }
 
-    public static Map<String, Integer> getMaxPartyPlayers(Class<? extends Game> gameType) {
+    public static Map<String, Integer> getMaxPartyPlayers(Class<? extends AbstractGame> gameType) {
         try {
             return gameType.getConstructor().newInstance().getMaxPartyPlayers();
         } catch (InstantiationException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {

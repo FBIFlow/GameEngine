@@ -6,6 +6,6 @@ public interface Player {
 
     String getName();
 
-    List<String> getPartyPermissions();
+    List<String> getPermissions();
 
 }

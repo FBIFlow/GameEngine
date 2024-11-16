@@ -30,6 +30,7 @@ public class PartyManager {
         party.getMembers().add(owner);
         //TODO: send message
         parties.add(party);
+        party.setPermissionLevel(owner.getPermissions());
         return party;
     }
 
