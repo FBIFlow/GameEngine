@@ -1,6 +1,5 @@
-package me.fbiflow.remapped.model.queue;
+package me.fbiflow.remapped.model;
 
-import com.google.common.base.MoreObjects;
 import me.fbiflow.remapped.model.game.AbstractGame;
 import me.fbiflow.remapped.model.wrapper.internal.Player;
 

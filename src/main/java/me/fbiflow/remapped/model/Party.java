@@ -1,4 +1,4 @@
-package me.fbiflow.remapped.model.party;
+package me.fbiflow.remapped.model;
 
 import me.fbiflow.remapped.model.wrapper.internal.Player;
 

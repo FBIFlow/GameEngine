@@ -1,5 +1,6 @@
-package me.fbiflow.remapped.model.party;
+package me.fbiflow.remapped.model.common;
 
+import me.fbiflow.remapped.model.Party;
 import me.fbiflow.remapped.model.wrapper.internal.Player;
 import org.jetbrains.annotations.Nullable;
 

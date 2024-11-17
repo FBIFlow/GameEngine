@@ -1,9 +1,8 @@
-package me.fbiflow.remapped.model.queue;
+package me.fbiflow.remapped.model.common;
 
 import me.fbiflow.remapped.model.game.AbstractGame;
-import me.fbiflow.remapped.model.game.GameManager;
-import me.fbiflow.remapped.model.party.Party;
-import me.fbiflow.remapped.model.party.PartyManager;
+import me.fbiflow.remapped.model.Party;
+import me.fbiflow.remapped.model.QueueItem;
 import me.fbiflow.remapped.model.wrapper.internal.Player;
 import org.jetbrains.annotations.Nullable;
 

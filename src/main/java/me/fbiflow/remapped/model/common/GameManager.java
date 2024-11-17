@@ -1,4 +1,6 @@
-package me.fbiflow.remapped.model.game;
+package me.fbiflow.remapped.model.common;
+
+import me.fbiflow.remapped.model.game.AbstractGame;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
