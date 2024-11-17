@@ -1,4 +1,4 @@
-package me.fbiflow.remapped.model;
+package me.fbiflow.remapped.model.queue;
 
 import me.fbiflow.remapped.model.game.AbstractGame;
 import me.fbiflow.remapped.model.wrapper.internal.Player;
@@ -11,7 +11,6 @@ public class QueueItem {
 
     private final UUID uuid;
     private final List<Player> members;
-
     private Class<? extends AbstractGame> gameType;
     private int maxPlayers = 48;
     private boolean registered;
@@ -21,35 +20,35 @@ public class QueueItem {
         this.members = new ArrayList<>();
     }
 
-    protected static QueueItem newInstance() {
-        return new QueueItem();
-    }
-
     private QueueItem() {
 
     }
 
-    protected UUID getUuid() {
+    public UUID getUuid() {
         return this.uuid;
     }
 
-    protected boolean isEmpty() {
+    public boolean isEmpty() {
         return this.members.isEmpty();
     }
 
-    protected boolean isFull() {
+    public boolean isFull() {
         return members.size() == maxPlayers;
     }
 
-    protected List<Player> getMembers() {
+    public List<Player> getMembers() {
         return this.members;
     }
 
-    protected Class<? extends AbstractGame> getGameType() {
+    public List<Player> getMembersCopy() {
+        return new ArrayList<>(this.members);
+    }
+
+    public Class<? extends AbstractGame> getGameType() {
         return this.gameType;
     }
 
-    protected void setGameType(Class<? extends AbstractGame> gameType) {
+    public void setGameType(Class<? extends AbstractGame> gameType) {
         this.gameType = gameType;
         try {
             AbstractGame abstractGame = gameType.getConstructor().newInstance();
@@ -59,26 +58,26 @@ public class QueueItem {
         }
     }
 
-    protected int getMaxPlayers() {
+    public int getMaxPlayers() {
         return this.maxPlayers;
     }
 
-    protected boolean isRegistered() {
+    public boolean isRegistered() {
         return this.registered;
     }
 
-    protected void setRegistered(boolean registered) {
+    public void setRegistered(boolean registered) {
         this.registered = registered;
     }
 
     @Override
     public String toString() {
         return "QueueItem{" +
-                "uuid=" + uuid +
-                ", members=" + members +
-                ", gameType=" + gameType +
-                ", maxPlayers=" + maxPlayers +
-                ", registered=" + registered +
-                '}';
+                "\nuuid=" + uuid +
+                ", \nmembers=" + members +
+                ", \ngameType=" + gameType +
+                ", \nmaxPlayers=" + maxPlayers +
+                ", \nregistered=" + registered +
+                "\n}";
     }
 }

@@ -17,7 +17,7 @@ public class QueueServiceTest {
                 "MoDDuRat",
                 "CotoGus",
                 "Pivovar",
-                "Primer20",
+                "Primer2.0",
                 "Neolit",
                 "Atlantice",
                 "GindaLineyda",

@@ -1,4 +1,10 @@
 package me.fbiflow.remapped.protocol.packet;
 
-public class Packet {
+import me.fbiflow.remapped.protocol.packet.packets.AbstractPacket;
+
+import java.io.Serializable;
+import java.util.UUID;
+
+public record Packet(UUID sender, UUID receiver, byte[] data, Class<? extends AbstractPacket> packetClass) implements Serializable {
+
 }

@@ -1,4 +1,4 @@
-package me.fbiflow.remapped.model;
+package me.fbiflow.remapped.model.party;
 
 import me.fbiflow.remapped.model.wrapper.internal.Player;
 
@@ -11,10 +11,6 @@ public class Party {
     private final List<Player> members;
     private List<String> permissionLevel;
 
-    protected static Party newInstance() {
-        return new Party();
-    }
-
     private Party() {
         this.members = new ArrayList<>();
     }
@@ -23,11 +19,11 @@ public class Party {
         return this.owner;
     }
 
-    protected void setOwner(Player owner) {
+    public void setOwner(Player owner) {
         this.owner = owner;
     }
 
-    protected List<Player> getMembers() {
+    public List<Player> getMembers() {
         return this.members;
     }
 
@@ -37,9 +33,5 @@ public class Party {
 
     public void setPermissionLevel(List<String> permissionLevel) {
         this.permissionLevel = permissionLevel;
-    }
-
-    public List<Player> getMembersCopy() {
-        return new ArrayList<>(this.members);
     }
 }

@@ -1,17 +1,19 @@
 package me.fbiflow.remapped.model.common;
 
-import me.fbiflow.remapped.model.Party;
+import me.fbiflow.remapped.model.party.Party;
+import me.fbiflow.remapped.model.party.PartyState;
 import me.fbiflow.remapped.model.wrapper.internal.Player;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 public class PartyManager {
 
     private final List<Party> parties;
 
-    private Map<Player, List<Player>> invites;
-    private Map<Player, Player> lastInvitedBy;
+    private final Map<Player, List<Player>> invites;
+    private final Map<Player, Player> lastInvitedBy;
 
     public PartyManager() {
         this.parties = new ArrayList<>();
@@ -26,7 +28,7 @@ public class PartyManager {
      * @return created Party
      */
     public Party createParty(Player owner) {
-        Party party = Party.newInstance();
+        Party party = createParty();
         party.setOwner(owner);
         party.getMembers().add(owner);
         //TODO: send message
@@ -35,20 +37,7 @@ public class PartyManager {
         return party;
     }
 
-    /**
-     * Delete Party
-     */
-    public void removeParty(Party party) {
-        Player owner = party.getOwner();
-        List<Player> members = party.getMembers();
-        members.remove(owner);
-        //TODO: send message to owner
-        for (Player member : members) {
-            members.remove(member);
-            //TODO: send message to members
-        }
-        parties.remove(party);
-    }
+
 
     /**
      * Remove player from party. If player is owner set new owner
@@ -75,6 +64,9 @@ public class PartyManager {
             for (Player p : members) {
                 //TODO: send message (member leave)
             }
+        }
+        if (party.getMembers().isEmpty())  {
+            removeParty(party);
         }
     }
 
@@ -125,7 +117,7 @@ public class PartyManager {
      * Remove all invites created by sender
      * @param sender who created invites
      */
-    public void removeInvites(Player sender) {
+    private void removeInvites(Player sender) {
         for (Player invited : lastInvitedBy.keySet()) {
             if (lastInvitedBy.get(invited) == sender) {
                 lastInvitedBy.remove(invited);
@@ -135,11 +127,26 @@ public class PartyManager {
     }
 
     /**
+     * Delete Party
+     */
+    private void removeParty(Party party) {
+        Player owner = party.getOwner();
+        List<Player> members = party.getMembers();
+        members.remove(owner);
+        //TODO: send message to owner
+        for (Player member : members) {
+            members.remove(member);
+            //TODO: send message to members
+        }
+        parties.remove(party);
+    }
+
+    /**
      * Get Party by party owner
      * @param owner party owner
      * @return Party if exists, otherwise null
      */
-    public Party getByOwner(Player owner) {
+    private Party getByOwner(Player owner) {
         for (Party party : parties) {
             if (party.getOwner() == owner) {
                 return party;
@@ -153,7 +160,7 @@ public class PartyManager {
      * @param member member
      * @return Party if exists, otherwise null
      */
-    public Party getByMember(Player member) {
+    Party getByMember(Player member) {
         for (Party party : parties) {
             for (Player p : party.getMembers()) {
                 if (p == member) {
@@ -169,8 +176,16 @@ public class PartyManager {
      * @param player player
      * @return true if player is in party
      */
-    public boolean isPlayerInParty(Player player) {
+    boolean isPlayerInParty(Player player) {
         return getByMember(player) != null;
+    }
+
+    private Party createParty() {
+        try {
+            return Party.class.getDeclaredConstructor().newInstance();
+        } catch (InvocationTargetException | InstantiationException | IllegalAccessException | NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

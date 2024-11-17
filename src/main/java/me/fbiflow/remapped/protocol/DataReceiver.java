@@ -1,4 +1,9 @@
 package me.fbiflow.remapped.protocol;
 
-public interface DataReceiver {
+import me.fbiflow.remapped.protocol.packet.Packet;
+
+public abstract class DataReceiver extends DataInteractUnit {
+
+    public abstract void onReceive(Packet packet);
+
 }

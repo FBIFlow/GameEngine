@@ -1,11 +1,13 @@
 package me.fbiflow.remapped.model.common;
 
+import me.fbiflow.remapped.model.queue.QueueItem;
+import me.fbiflow.remapped.model.game.GameManager;
 import me.fbiflow.remapped.model.game.AbstractGame;
-import me.fbiflow.remapped.model.Party;
-import me.fbiflow.remapped.model.QueueItem;
+import me.fbiflow.remapped.model.party.Party;
 import me.fbiflow.remapped.model.wrapper.internal.Player;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -53,7 +55,7 @@ public class QueueManager {
                 allowedPartyPlayers = val;
             }
         }
-        List<Player> partyMembers = party.getMembersCopy();
+        List<Player> partyMembers = new ArrayList<>(party.getMembers());
         int partyMembersCount = partyMembers.size();
         if (partyMembersCount > GameManager.getMaxPlayers(gameType)) {
             //TODO: send message (too many players to this game)
@@ -94,7 +96,7 @@ public class QueueManager {
                 //TODO: send message (leave party and queue)
             } else {
                 Player owner = party.getOwner();
-                List<Player> partyMembers = party.getMembersCopy();
+                List<Player> partyMembers = new ArrayList<>(party.getMembers());
                 partyMembers.remove(owner);
 
                 queueItem.getMembers().remove(owner);
@@ -105,8 +107,6 @@ public class QueueManager {
                 }
             }
         }
-
-
         if (queueItem.isEmpty()) {
             removeQueueItemFromQueue(queueItem);
         }
@@ -130,7 +130,7 @@ public class QueueManager {
      * @return created instance of QueueItem
      */
     private QueueItem createQueueItem() {
-        QueueItem queueItem = QueueItem.newInstance();
+        QueueItem queueItem = newQueueItem();
         addQueueItemToQueue(queueItem);
         return queueItem;
     }
@@ -195,4 +195,13 @@ public class QueueManager {
         }
         return null;
     }
+
+    private QueueItem newQueueItem() {
+        try {
+            return QueueItem.class.getDeclaredConstructor().newInstance();
+        } catch (InvocationTargetException | InstantiationException | IllegalAccessException | NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }
