@@ -6,6 +6,10 @@ import java.util.UUID;
 
 public abstract class DataSender extends DataInteractUnit {
 
+    public abstract void setDefaultReceiver(Object receiverData);
+
+    public abstract boolean hasDefaultReceiver();
+
     public abstract void send(UUID receiverUUID, Packet packet);
 
 }

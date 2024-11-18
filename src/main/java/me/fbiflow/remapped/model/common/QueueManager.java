@@ -7,6 +7,7 @@ import me.fbiflow.remapped.model.party.Party;
 import me.fbiflow.remapped.model.wrapper.internal.Player;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
@@ -198,7 +199,11 @@ public class QueueManager {
 
     private QueueItem newQueueItem() {
         try {
-            return QueueItem.class.getDeclaredConstructor().newInstance();
+            Constructor<QueueItem> constructor = QueueItem.class.getDeclaredConstructor();
+            constructor.setAccessible(true);
+            QueueItem queueItem = constructor.newInstance();
+            constructor.setAccessible(false);
+            return queueItem;
         } catch (InvocationTargetException | InstantiationException | IllegalAccessException | NoSuchMethodException e) {
             throw new RuntimeException(e);
         }

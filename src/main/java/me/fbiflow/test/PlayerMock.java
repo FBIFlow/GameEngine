@@ -16,7 +16,7 @@ public class PlayerMock implements Player {
         for (Player x : playerExists.values()) {
             if (x.getName().equals(name)) {
                 this.name = UUID.randomUUID().toString();
-                System.out.println("name already exists, using random uuid: " + this.name);
+                System.out.println("[PlayerMockStatic]: name already exists, using random uuid: " + this.name);
             }
         }
         playerExists.put(this.name ,this);
