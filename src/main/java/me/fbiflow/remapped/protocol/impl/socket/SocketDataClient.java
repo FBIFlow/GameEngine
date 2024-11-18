@@ -1,6 +1,5 @@
 package me.fbiflow.remapped.protocol.impl.socket;
 
-import me.fbiflow.remapped.protocol.DataExchanger;
 import me.fbiflow.remapped.protocol.packet.Packet;
 import me.fbiflow.remapped.util.SerializeUtil;
 
@@ -9,7 +8,7 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
 
-public class SocketDataClient extends DataExchanger {
+public class SocketDataClient {
 
     private final Socket serverConnection;
     private final SocketAddress socketAddress;
@@ -19,7 +18,6 @@ public class SocketDataClient extends DataExchanger {
         this.serverConnection = new Socket();
     }
 
-    @Override
     public void start() {
         try {
             serverConnection.connect(socketAddress);
@@ -39,7 +37,6 @@ public class SocketDataClient extends DataExchanger {
         });
     }
 
-    @Override
     public void sendData(Packet packet) {
         try {
             OutputStream outputStream = serverConnection.getOutputStream();
@@ -50,7 +47,6 @@ public class SocketDataClient extends DataExchanger {
         }
     }
 
-    @Override
     public void handleData(Packet receivedPacket) {
 
     }
