@@ -2,31 +2,29 @@ package me.fbiflow.test;
 
 
 import me.fbiflow.remapped.model.wrapper.internal.Player;
+import me.fbiflow.remapped.util.LoggerUtil;
 
 import java.util.*;
 
 public class PlayerMock implements Player {
 
+    transient private final LoggerUtil logger = new LoggerUtil(" | [PlayerMock] -> ");
+
     private static final Map<String ,PlayerMock> playerExists = new HashMap<>();
 
-    private String name;
+    private final String name;
 
-    public PlayerMock(String name) {
+    private PlayerMock(String name) {
         this.name = name;
-        for (Player x : playerExists.values()) {
-            if (x.getName().equals(name)) {
-                this.name = UUID.randomUUID().toString();
-                System.out.println("[PlayerMockStatic]: name already exists, using random uuid: " + this.name);
-            }
-        }
-        playerExists.put(this.name ,this);
     }
 
     public static PlayerMock getPlayer(String name) {
         PlayerMock player = playerExists.get(name);
-        if (player == null) {
-            throw new RuntimeException("could not to find a player with name: " + name);
+        if (player != null) {
+            return player;
         }
+        player = new PlayerMock(name);
+        playerExists.put(name, player);
         return player;
     }
 
@@ -45,4 +43,16 @@ public class PlayerMock implements Player {
         return this.name;
     }
 
+    @Override
+    public int hashCode() {
+        return this.name.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof PlayerMock)) {
+            return false;
+        }
+        return Objects.equals(this.name, ((PlayerMock) obj).name);
+    }
 }

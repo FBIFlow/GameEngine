@@ -1,10 +1,11 @@
 package me.fbiflow.remapped.model.common;
 
-import me.fbiflow.remapped.model.queue.QueueItem;
-import me.fbiflow.remapped.model.game.GameManager;
 import me.fbiflow.remapped.model.game.AbstractGame;
+import me.fbiflow.remapped.model.game.GameManager;
 import me.fbiflow.remapped.model.party.Party;
+import me.fbiflow.remapped.model.queue.QueueItem;
 import me.fbiflow.remapped.model.wrapper.internal.Player;
+import me.fbiflow.remapped.util.LoggerUtil;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
@@ -13,7 +14,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static java.lang.String.format;
+
 public class QueueManager {
+
+    private final LoggerUtil logger = new LoggerUtil(" | [QueueManager] -> ");
 
     private final ArrayList<QueueItem> queue;
     private final PartyManager partyManager;
@@ -30,6 +35,11 @@ public class QueueManager {
      * @param gameType type of required game
      */
     public QueueItem joinQueue(Player player, Class<? extends AbstractGame> gameType) {
+        if (getPlayerQueueItem(player) != null) {
+            logger.log(format("Player %s is already in the queue.", player));
+            return null;
+        }
+
         if (!partyManager.isPlayerInParty(player)) {
             QueueItem queueItem = getFreeQueueItem(gameType);
             if (queueItem == null) {
@@ -37,35 +47,36 @@ public class QueueManager {
                 queueItem.setGameType(gameType);
             }
             queueItem.getMembers().add(player);
-            //TODO: send message (player joined)
+            logger.log(format("Player %s (hash:%s) joined queue %s with game type: %s", player, player.hashCode(), queueItem.hashCode(), gameType.getName()));
             return queueItem;
         }
+
         Party party = partyManager.getByMember(player);
         if (party.getOwner() != player) {
-            //TODO: send message (only owner can start queue)
+            logger.log("Cannot join queue. Only party owner can perform this.");
             return null;
         }
+
         Map<String, Integer> maxPartyPlayersMap = GameManager.getMaxPartyPlayers(gameType);
         int allowedPartyPlayers = 0;
-        for (String permission : party.getPermissionLevel()) {
-            if (maxPartyPlayersMap.get(permission) == null) {
-                continue;
-            }
-            int val = maxPartyPlayersMap.get(permission);
-            if (val > allowedPartyPlayers) {
+        for (String partyPermission : party.getPermissionLevel()) {
+            Integer val = maxPartyPlayersMap.get(partyPermission);
+            if (val != null && val > allowedPartyPlayers) {
                 allowedPartyPlayers = val;
             }
         }
+
         List<Player> partyMembers = new ArrayList<>(party.getMembers());
         int partyMembersCount = partyMembers.size();
         if (partyMembersCount > GameManager.getMaxPlayers(gameType)) {
-            //TODO: send message (too many players to this game)
+            logger.log("Too many players in the party for this game.");
             return null;
         }
         if (partyMembersCount > allowedPartyPlayers) {
-            //TODO: send message (too many players in party)
+            logger.log("Too many players in the party for the allowed limit.");
             return null;
         }
+
         QueueItem queueItem = getFreeQueueItem(gameType, partyMembersCount);
         if (queueItem == null) {
             queueItem = createQueueItem();
@@ -73,10 +84,11 @@ public class QueueManager {
         }
         for (Player p : partyMembers) {
             queueItem.getMembers().add(p);
-            //TODO: send message (player joined)
+            logger.log(format("Player %s joined the queue.", p));
         }
         return queueItem;
     }
+
 
     /**
      * Remove player from queue
@@ -204,7 +216,8 @@ public class QueueManager {
             QueueItem queueItem = constructor.newInstance();
             constructor.setAccessible(false);
             return queueItem;
-        } catch (InvocationTargetException | InstantiationException | IllegalAccessException | NoSuchMethodException e) {
+        } catch (InvocationTargetException | InstantiationException | IllegalAccessException |
+                 NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
     }

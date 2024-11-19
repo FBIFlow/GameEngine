@@ -40,7 +40,6 @@ public class ConsumerService {
 
     public void addToQueue(Player player, Class<? extends Game> gameType) {
         if (isPlayerInQueue(player)) {
-            System.out.println("player is already in queue");
             return;
         }
         for (QueueUnit unit : queue) {
@@ -55,7 +54,6 @@ public class ConsumerService {
     public void removeFromQueue(Player player) {
         QueueUnit unit = getPlayerQueueUnit(player);
         if (unit == null) {
-            System.out.println("player isn`t in queue");
             return;
         }
         unit.removePlayer(player);

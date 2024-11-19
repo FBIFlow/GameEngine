@@ -1,7 +1,8 @@
-package me.fbiflow.remapped.protocol.packet.packets;
+package me.fbiflow.remapped.protocol.packet.packets.client;
 
 import me.fbiflow.remapped.model.game.AbstractGame;
 import me.fbiflow.remapped.model.wrapper.internal.Player;
+import me.fbiflow.remapped.protocol.packet.packets.AbstractPacket;
 
 public class PlayerQueueJoinRequestPacket extends AbstractPacket {
 
