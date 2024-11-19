@@ -7,6 +7,8 @@ import me.fbiflow.remapped.model.game.games.Pillars;
 import me.fbiflow.remapped.model.wrapper.internal.Player;
 import me.fbiflow.remapped.protocol.communication.SocketDataClient;
 import me.fbiflow.remapped.protocol.communication.SocketDataServer;
+import me.fbiflow.remapped.protocol.packet.Packet;
+import me.fbiflow.remapped.protocol.packet.packets.client.PlayerQueueJoinRequestPacket;
 import me.fbiflow.test.PlayerMock;
 
 import java.util.Scanner;
@@ -21,7 +23,7 @@ public class Loader {
 
         Class<? extends AbstractGame> gameType = Pillars.class;
         for (String name; !(name = new Scanner(System.in).nextLine()).isEmpty();) {
-            lobbyController.sendPlayerJoin(getPlayer(name), gameType);
+            lobbyController.sendPacket(Packet.of(new PlayerQueueJoinRequestPacket(getPlayer(name), gameType)));
         }
     }
 }

@@ -3,12 +3,17 @@ package me.fbiflow.remapped.model.common;
 import me.fbiflow.remapped.model.party.Party;
 import me.fbiflow.remapped.model.party.PartyState;
 import me.fbiflow.remapped.model.wrapper.internal.Player;
+import me.fbiflow.remapped.util.LoggerUtil;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
+import static java.lang.String.format;
+
 public class PartyManager {
+
+    private final LoggerUtil logger = new LoggerUtil(" | [PartyManager] -> ");
 
     private final List<Party> parties;
 
@@ -31,7 +36,8 @@ public class PartyManager {
         Party party = createParty();
         party.setOwner(owner);
         party.getMembers().add(owner);
-        //TODO: send message
+        //TODO: send message to player
+        logger.log(format("Player %s created new party %s", owner, party));
         parties.add(party);
         party.setPermissionLevel(owner.getPermissions());
         return party;
@@ -47,6 +53,7 @@ public class PartyManager {
         Party party = getByMember(player);
         if (party == null) {
             //TODO: send message (not in party)
+            logger.log(format("Player %s tried to leave party, but already not in", player));
             return;
         }
         List<Player> members = party.getMembers();
@@ -55,6 +62,7 @@ public class PartyManager {
             removeInvites(player);
             party.setOwner(members.getFirst());
             //TODO: send message (new owner)
+            logger.log(format("Player %s is new owner of party %s", party.getOwner(), party));
             for (Player p : members) {
                 if (p != party.getOwner()) {
                     //TODO: send message (owner leave, have new owner)
@@ -64,6 +72,7 @@ public class PartyManager {
             for (Player p : members) {
                 //TODO: send message (member leave)
             }
+            logger.log(format("Player %s left party %s", player, party));
         }
         if (party.getMembers().isEmpty())  {
             removeParty(party);
@@ -81,6 +90,7 @@ public class PartyManager {
         lastInvitedBy.put(invited, sender);
         invites.put(sender, invitedPlayers);
         //TODO: send message
+        logger.log(format("Player %s invited to party by %s", invited, sender));
     }
 
     /**
@@ -92,10 +102,12 @@ public class PartyManager {
         Party party = sender != null ? getByOwner(sender) : getByOwner(lastInvitedBy.remove(invited));
         if (party == null) {
             //TODO: send message
+            logger.log(format("Player %s tried to accept party invite, but not invited", invited));
             return;
         }
         party.getMembers().add(invited);
         //TODO: send message
+        logger.log(format("Player %s joined party %s", invited, party));
     }
 
     /**
@@ -111,6 +123,7 @@ public class PartyManager {
             lastInvitedBy.remove(invited);
         }
         //TODO: send message (isn`t invited now)
+        logger.log(format("Player %s now is not invited to %s`s party", invited, sender));
     }
 
     /**
@@ -134,6 +147,7 @@ public class PartyManager {
         List<Player> members = party.getMembers();
         members.remove(owner);
         //TODO: send message to owner
+        logger.log(format("%s`s party removed (%s)", owner, party));
         for (Player member : members) {
             members.remove(member);
             //TODO: send message to members
@@ -160,7 +174,7 @@ public class PartyManager {
      * @param member member
      * @return Party if exists, otherwise null
      */
-    Party getByMember(Player member) {
+    public Party getByMember(Player member) {
         for (Party party : parties) {
             for (Player p : party.getMembers()) {
                 if (p == member) {

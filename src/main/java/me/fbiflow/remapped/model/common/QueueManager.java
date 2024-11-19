@@ -31,11 +31,12 @@ public class QueueManager {
     /**
      * Add player to queue, try find existing QueueItem or create new
      *
-     * @param player   who joins
+     * @param player who joins
      * @param gameType type of required game
      */
     public QueueItem joinQueue(Player player, Class<? extends AbstractGame> gameType) {
         if (getPlayerQueueItem(player) != null) {
+            //TODO: send message to player
             logger.log(format("Player %s is already in the queue.", player));
             return null;
         }
@@ -53,6 +54,7 @@ public class QueueManager {
 
         Party party = partyManager.getByMember(player);
         if (party.getOwner() != player) {
+            //TODO: send message to player
             logger.log("Cannot join queue. Only party owner can perform this.");
             return null;
         }
@@ -69,10 +71,12 @@ public class QueueManager {
         List<Player> partyMembers = new ArrayList<>(party.getMembers());
         int partyMembersCount = partyMembers.size();
         if (partyMembersCount > GameManager.getMaxPlayers(gameType)) {
+            //TODO: send message to player
             logger.log("Too many players in the party for this game.");
             return null;
         }
         if (partyMembersCount > allowedPartyPlayers) {
+            //TODO: send message to player
             logger.log("Too many players in the party for the allowed limit.");
             return null;
         }
@@ -84,8 +88,9 @@ public class QueueManager {
         }
         for (Player p : partyMembers) {
             queueItem.getMembers().add(p);
-            logger.log(format("Player %s joined the queue.", p));
+            //TODO: send message to player
         }
+        logger.log(format("Player %s (hash:%s) joined queue %s with game type: %s", player, player.hashCode(), queueItem.hashCode(), gameType.getName()));
         return queueItem;
     }
 
