@@ -7,6 +7,8 @@ import me.fbiflow.remapped.model.queue.QueueItem;
 import me.fbiflow.remapped.model.wrapper.internal.Player;
 import me.fbiflow.remapped.util.LoggerUtil;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -18,6 +20,7 @@ import static java.lang.String.format;
 
 public class QueueManager {
 
+    private static final Logger log = LoggerFactory.getLogger(QueueManager.class);
     private final LoggerUtil logger = new LoggerUtil(" | [QueueManager] -> ");
 
     private final ArrayList<QueueItem> queue;
@@ -103,6 +106,7 @@ public class QueueManager {
     public void leaveQueue(Player player) {
         QueueItem queueItem = getPlayerQueueItem(player);
         if (queueItem == null) {
+            logger.log(format("Player %s is not in queue",player.getName()));
             return;
             //TODO: send message (not in queue)
         }
@@ -111,6 +115,7 @@ public class QueueManager {
             if (party.getOwner() != player) {
                 partyManager.leaveParty(player);
                 queueItem.getMembers().remove(player);
+                logger.log(format("Player %s left from queue and party", player.getName()));
                 //TODO: send message (leave party and queue)
             } else {
                 Player owner = party.getOwner();
@@ -118,13 +123,17 @@ public class QueueManager {
                 partyMembers.remove(owner);
 
                 queueItem.getMembers().remove(owner);
+                logger.log(format("Party owner %s and all players left queue", player.getName()));
                 //TODO: send message (owner leave and all players)
                 for (Player p : partyMembers) {
                     queueItem.getMembers().remove(p);
                     //TODO: send message (leave queue because of owner)
                 }
             }
+            return;
         }
+        queueItem.getMembers().remove(player);
+        logger.log(format("Player %s left queue", player.getName()));
         if (queueItem.isEmpty()) {
             removeQueueItemFromQueue(queueItem);
         }

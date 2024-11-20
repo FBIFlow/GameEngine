@@ -1,11 +1,12 @@
 package me.fbiflow.remapped.model.common;
 
 import me.fbiflow.remapped.model.party.Party;
-import me.fbiflow.remapped.model.party.PartyState;
 import me.fbiflow.remapped.model.wrapper.internal.Player;
 import me.fbiflow.remapped.util.LoggerUtil;
+import org.bukkit.block.data.type.Bed;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
@@ -33,6 +34,10 @@ public class PartyManager {
      * @return created Party
      */
     public Party createParty(Player owner) {
+        if (isPlayerInParty(owner)) {
+            logger.log(format("Player %s trying to create party, but is already in", owner));
+            return null;
+        }
         Party party = createParty();
         party.setOwner(owner);
         party.getMembers().add(owner);
@@ -44,9 +49,9 @@ public class PartyManager {
     }
 
 
-
     /**
      * Remove player from party. If player is owner set new owner
+     *
      * @param player who leave
      */
     public void leaveParty(Player player) {
@@ -74,7 +79,7 @@ public class PartyManager {
             }
             logger.log(format("Player %s left party %s", player, party));
         }
-        if (party.getMembers().isEmpty())  {
+        if (party.getMembers().isEmpty()) {
             removeParty(party);
         }
     }
@@ -86,7 +91,12 @@ public class PartyManager {
      * @param invited who invited
      */
     public void addInvite(Player sender, Player invited) {
+        if (!isPlayerInParty(sender)) {
+            logger.log(format("Player %s sending invite, but is not in party", sender));
+            return;
+        }
         List<Player> invitedPlayers = Optional.ofNullable(invites.get(sender)).orElse(List.of(invited));
+        logger.log(format("InvitedPlayers: %s", invitedPlayers));
         lastInvitedBy.put(invited, sender);
         invites.put(sender, invitedPlayers);
         //TODO: send message
@@ -95,10 +105,11 @@ public class PartyManager {
 
     /**
      * Accept invite
+     *
      * @param invited who accepts
      * @param sender  who invited
      */
-    public void acceptInvite(Player invited, @Nullable Player sender) {
+    public void acceptInvite(@Nullable Player sender, Player invited) {
         Party party = sender != null ? getByOwner(sender) : getByOwner(lastInvitedBy.remove(invited));
         if (party == null) {
             //TODO: send message
@@ -128,6 +139,7 @@ public class PartyManager {
 
     /**
      * Remove all invites created by sender
+     *
      * @param sender who created invites
      */
     private void removeInvites(Player sender) {
@@ -157,12 +169,13 @@ public class PartyManager {
 
     /**
      * Get Party by party owner
+     *
      * @param owner party owner
      * @return Party if exists, otherwise null
      */
     private Party getByOwner(Player owner) {
         for (Party party : parties) {
-            if (party.getOwner() == owner) {
+            if (party.getOwner().equals(owner)) {
                 return party;
             }
         }
@@ -171,13 +184,14 @@ public class PartyManager {
 
     /**
      * Get Party by member
+     *
      * @param member member
      * @return Party if exists, otherwise null
      */
     public Party getByMember(Player member) {
         for (Party party : parties) {
             for (Player p : party.getMembers()) {
-                if (p == member) {
+                if (p.equals(member)) {
                     return party;
                 }
             }
@@ -187,6 +201,7 @@ public class PartyManager {
 
     /**
      * check if player in party
+     *
      * @param player player
      * @return true if player is in party
      */
@@ -196,8 +211,13 @@ public class PartyManager {
 
     private Party createParty() {
         try {
-            return Party.class.getDeclaredConstructor().newInstance();
-        } catch (InvocationTargetException | InstantiationException | IllegalAccessException | NoSuchMethodException e) {
+            Constructor<Party> constructor = Party.class.getDeclaredConstructor();
+            constructor.setAccessible(true);
+            Party party = constructor.newInstance();
+            constructor.setAccessible(false);
+            return party;
+        } catch (InvocationTargetException | InstantiationException | IllegalAccessException |
+                 NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
     }

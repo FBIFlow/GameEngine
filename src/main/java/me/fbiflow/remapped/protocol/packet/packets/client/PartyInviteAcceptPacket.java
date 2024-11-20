@@ -8,6 +8,7 @@ public class PartyInviteAcceptPacket extends AbstractPacket {
     private final Player sender;
     private final Player invited;
 
+
     public PartyInviteAcceptPacket(Player sender, Player invited) {
         this.sender = sender;
         this.invited = invited;
