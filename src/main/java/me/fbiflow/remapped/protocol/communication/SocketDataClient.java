@@ -1,20 +1,19 @@
 package me.fbiflow.remapped.protocol.communication;
 
+import me.fbiflow.remapped.protocol.PacketHolder;
 import me.fbiflow.remapped.protocol.packet.Packet;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
-public class SocketDataClient {
+public class SocketDataClient implements PacketHolder {
 
     private Socket socket;
 
-    private final List<Packet> receivedPackets = Collections.synchronizedList(new ArrayList<>());
+    private final Map<Socket, List<Packet>> receivedPackets = Collections.synchronizedMap(new HashMap<>());
 
     private ObjectInputStream objectInputStream;
     private ObjectOutputStream objectOutputStream;
@@ -51,7 +50,12 @@ public class SocketDataClient {
                         break;
                     }
                     Packet packet = (Packet) objectInputStream.readObject();
-                    receivedPackets.add(packet);
+                    List<Packet> packets = receivedPackets.get(socket);
+                    if (packets == null) {
+                        packets = new ArrayList<>();
+                    }
+                    packets.add(packet);
+                    receivedPackets.put(socket, packets);
                 }
             } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
@@ -68,5 +72,8 @@ public class SocketDataClient {
         packetListener.start();
     }
 
-
+    @Override
+    public Map<Socket, List<Packet>> getReceivedPackets() {
+        return this.receivedPackets;
+    }
 }

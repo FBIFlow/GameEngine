@@ -1,7 +1,7 @@
 package me.fbiflow.test;
 
 
-import me.fbiflow.remapped.model.wrapper.internal.Player;
+import me.fbiflow.remapped.core.model.wrapper.internal.Player;
 import me.fbiflow.remapped.util.LoggerUtil;
 
 import java.util.*;

@@ -1,5 +1,6 @@
 package me.fbiflow.remapped.protocol.communication;
 
+import me.fbiflow.remapped.protocol.PacketHolder;
 import me.fbiflow.remapped.protocol.packet.Packet;
 import me.fbiflow.remapped.util.LoggerUtil;
 
@@ -10,7 +11,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.*;
 
-public class SocketDataServer {
+public class SocketDataServer implements PacketHolder {
 
     private final LoggerUtil logger = new LoggerUtil(" | [Server] -> ");
 
