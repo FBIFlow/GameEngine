@@ -1,5 +1,6 @@
 package me.fbiflow.remapped.core.controller;
 
+import me.fbiflow.remapped.core.model.Party;
 import me.fbiflow.remapped.core.model.PartyManager;
 import me.fbiflow.remapped.core.model.QueueManager;
 import me.fbiflow.remapped.core.model.QueueItem;
@@ -32,6 +33,7 @@ public class ProxyController implements PacketListener {
 
     @PacketHandler
     private void onPartyCreate(PartyCreatePacket packet, Packet source, Socket sender) {
+        partyManager.createParty(packet.getOwner());
         server.sendPacket(sender, Packet.of(new PartyCreatePacket(packet.getOwner())));
     }
 

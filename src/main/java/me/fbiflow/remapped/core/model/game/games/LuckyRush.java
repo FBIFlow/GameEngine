@@ -38,4 +38,9 @@ public class LuckyRush extends AbstractGame {
     public void onEnd() {
 
     }
+
+    @Override
+    public void onRemove() {
+
+    }
 }

@@ -16,4 +16,6 @@ public abstract class AbstractGame {
 
     public abstract void onEnd();
 
+    public abstract void onRemove();
+
 }

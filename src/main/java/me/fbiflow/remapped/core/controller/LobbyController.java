@@ -1,6 +1,5 @@
 package me.fbiflow.remapped.core.controller;
 
-import me.fbiflow.remapped.core.view.PartyView;
 import me.fbiflow.remapped.protocol.PacketHandler;
 import me.fbiflow.remapped.protocol.PacketHolder;
 import me.fbiflow.remapped.protocol.PacketListener;
@@ -13,7 +12,7 @@ import java.net.Socket;
 
 public class LobbyController implements PacketListener {
 
-    private final LoggerUtil logger = new LoggerUtil(" | [LobbyController] ->");
+    private final LoggerUtil logger = new LoggerUtil(" | [LobbyController] -> ");
 
     private final SocketDataClient client;
 

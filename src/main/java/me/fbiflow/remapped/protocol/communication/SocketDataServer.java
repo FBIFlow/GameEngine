@@ -21,6 +21,8 @@ public class SocketDataServer implements PacketHolder {
     private final List<Socket> lobbies = new ArrayList<>();
     private final List<Socket> sessions = new ArrayList<>();
 
+    private ObjectOutputStream objectOutputStream;
+
     private final Map<Socket, List<Packet>> receivedPackets = Collections.synchronizedMap(new HashMap<>());
 
     public SocketDataServer(int port) {
@@ -52,9 +54,12 @@ public class SocketDataServer implements PacketHolder {
     }
 
     public void sendPacket(Socket socket, Packet packet) {
-        try (ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream())) {
-            outputStream.writeObject(packet);
-            outputStream.flush();
+        try {
+            if (objectOutputStream == null) {
+                objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+            }
+            objectOutputStream.writeObject(packet);
+            objectOutputStream.flush();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

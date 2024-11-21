@@ -3,6 +3,7 @@ package me.fbiflow;
 import me.fbiflow.remapped.core.controller.LobbyController;
 import me.fbiflow.remapped.core.controller.ProxyController;
 import me.fbiflow.remapped.core.controller.SessionHolderController;
+import me.fbiflow.remapped.core.model.SessionUnit;
 import me.fbiflow.remapped.core.model.game.AbstractGame;
 import me.fbiflow.remapped.core.model.game.games.Pillars;
 import me.fbiflow.remapped.core.model.wrapper.internal.Player;
@@ -12,6 +13,8 @@ import me.fbiflow.remapped.protocol.packet.Packet;
 import me.fbiflow.remapped.protocol.packet.packets.*;
 import me.fbiflow.remapped.util.LoggerUtil;
 
+import java.text.ListFormat;
+import java.util.List;
 import java.util.Scanner;
 
 import static me.fbiflow.test.PlayerMock.getPlayer;
@@ -21,7 +24,8 @@ public class Loader {
     public static void main() {
         var proxyController = new ProxyController(new SocketDataServer(34646));
         var lobbyController = new LobbyController(new SocketDataClient("localhost", 34646));
-        var sessionHolderController = new SessionHolderController(new SocketDataClient("localhost", 34646));
+        List<SessionUnit> sessionUnits = List.of();
+//        var sessionHolderController = new SessionHolderController(new SocketDataClient("localhost", 34646), ));
 
         LoggerUtil logger = new LoggerUtil(" | [Loader] -> ");
 

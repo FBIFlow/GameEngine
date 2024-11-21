@@ -39,4 +39,9 @@ public class Pillars extends AbstractGame {
     public void onEnd() {
 
     }
+
+    @Override
+    public void onRemove() {
+
+    }
 }
