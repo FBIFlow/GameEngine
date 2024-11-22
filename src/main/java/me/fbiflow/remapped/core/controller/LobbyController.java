@@ -5,7 +5,7 @@ import me.fbiflow.remapped.protocol.PacketHolder;
 import me.fbiflow.remapped.protocol.PacketListener;
 import me.fbiflow.remapped.protocol.communication.SocketDataClient;
 import me.fbiflow.remapped.protocol.packet.Packet;
-import me.fbiflow.remapped.protocol.packet.packets.PartyCreatePacket;
+import me.fbiflow.remapped.protocol.packet.packets.party.PartyCreatePacket;
 import me.fbiflow.remapped.util.LoggerUtil;
 
 import java.net.Socket;

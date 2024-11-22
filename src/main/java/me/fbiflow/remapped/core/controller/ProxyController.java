@@ -1,6 +1,5 @@
 package me.fbiflow.remapped.core.controller;
 
-import me.fbiflow.remapped.core.model.Party;
 import me.fbiflow.remapped.core.model.PartyManager;
 import me.fbiflow.remapped.core.model.QueueManager;
 import me.fbiflow.remapped.core.model.QueueItem;
@@ -9,7 +8,9 @@ import me.fbiflow.remapped.protocol.PacketHolder;
 import me.fbiflow.remapped.protocol.PacketListener;
 import me.fbiflow.remapped.protocol.communication.SocketDataServer;
 import me.fbiflow.remapped.protocol.packet.Packet;
-import me.fbiflow.remapped.protocol.packet.packets.*;
+import me.fbiflow.remapped.protocol.packet.packets.party.*;
+import me.fbiflow.remapped.protocol.packet.packets.queue.PlayerQueueJoinRequestPacket;
+import me.fbiflow.remapped.protocol.packet.packets.queue.PlayerQueueLeaveRequestPacket;
 import me.fbiflow.remapped.util.LoggerUtil;
 
 import java.net.Socket;

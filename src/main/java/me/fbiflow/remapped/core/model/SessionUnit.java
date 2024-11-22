@@ -5,6 +5,7 @@ import me.fbiflow.remapped.core.model.wrapper.internal.World;
 import me.fbiflow.remapped.core.model.wrapper.internal.WorldManager;
 
 import java.util.List;
+import java.util.UUID;
 
 public class SessionUnit {
 
@@ -12,18 +13,23 @@ public class SessionUnit {
     private World sessionWorld;
     private List<Class<? extends AbstractGame>> gameTypes;
 
-    private boolean locked = false;
+    private UUID reservedBy = null;
 
     private SessionUnit(Class<? extends World> worldType, String worldId, List<Class<? extends AbstractGame>> gameTypes) {
         worldManager = new WorldManager(worldType);
         this.sessionWorld = worldManager.createWorld(worldId);
     }
 
-    public boolean isLocked() {
-        return this.locked;
+    public void setup() {
+        //create world
+        //init
     }
 
-    public void setLocked(boolean locked) {
-        this.locked = locked;
+    public boolean isReserved() {
+        return this.reservedBy != null;
+    }
+
+    public void reserve(UUID packetId) {
+        this.reservedBy = packetId;
     }
 }

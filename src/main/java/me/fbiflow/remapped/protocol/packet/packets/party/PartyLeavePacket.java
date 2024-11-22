@@ -1,4 +1,4 @@
-package me.fbiflow.remapped.protocol.packet.packets;
+package me.fbiflow.remapped.protocol.packet.packets.party;
 
 import me.fbiflow.remapped.core.model.wrapper.internal.Player;
 import me.fbiflow.remapped.protocol.packet.AbstractPacket;

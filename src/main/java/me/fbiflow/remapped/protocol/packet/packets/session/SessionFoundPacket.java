@@ -1,4 +1,4 @@
-package me.fbiflow.remapped.protocol.packet.packets;
+package me.fbiflow.remapped.protocol.packet.packets.session;
 
 import me.fbiflow.remapped.protocol.packet.AbstractPacket;
 
@@ -14,10 +14,6 @@ public class SessionFoundPacket extends AbstractPacket {
     }
 
     public UUID getPacketId() {
-        return this.packetId;
-    }
-
-    public UUID getConnectionKey() {
         return this.packetId;
     }
 }

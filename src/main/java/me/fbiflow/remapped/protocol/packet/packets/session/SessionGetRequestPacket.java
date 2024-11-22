@@ -1,4 +1,4 @@
-package me.fbiflow.remapped.protocol.packet.packets;
+package me.fbiflow.remapped.protocol.packet.packets.session;
 
 import me.fbiflow.remapped.core.model.game.AbstractGame;
 import me.fbiflow.remapped.protocol.packet.AbstractPacket;

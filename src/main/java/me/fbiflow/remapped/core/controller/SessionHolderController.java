@@ -7,9 +7,10 @@ import me.fbiflow.remapped.protocol.PacketHolder;
 import me.fbiflow.remapped.protocol.PacketListener;
 import me.fbiflow.remapped.protocol.communication.SocketDataClient;
 import me.fbiflow.remapped.protocol.packet.Packet;
-import me.fbiflow.remapped.protocol.packet.packets.SessionFoundPacket;
-import me.fbiflow.remapped.protocol.packet.packets.SessionGetRequestPacket;
-import me.fbiflow.remapped.protocol.packet.packets.SessionNotFoundPacket;
+import me.fbiflow.remapped.protocol.packet.packets.session.SessionFoundPacket;
+import me.fbiflow.remapped.protocol.packet.packets.session.SessionGetCallbackRequestPacket;
+import me.fbiflow.remapped.protocol.packet.packets.session.SessionGetRequestPacket;
+import me.fbiflow.remapped.protocol.packet.packets.session.SessionNotFoundPacket;
 import me.fbiflow.remapped.util.LoggerUtil;
 
 import java.net.Socket;
@@ -25,12 +26,15 @@ public class SessionHolderController implements PacketListener {
 
     public SessionHolderController(SocketDataClient server, List<SessionUnit> sessionUnits) {
         this.sessionUnits = sessionUnits;
+        for (SessionUnit sessionUnit : sessionUnits) {
+            sessionUnit.setup();
+        }
         this.server = server;
         startListener(server);
     }
 
     @PacketHandler
-    private void onGetSessionRequestPacketReceive(SessionGetRequestPacket packet, Packet source, Socket sender) {
+    private void onSessionGetRequestPacketReceive(SessionGetRequestPacket packet, Packet source, Socket sender) {
         SessionUnit sessionUnit = getFreeSession(packet.getGameType());
         if (sessionUnit == null) {
             //TODO: Could not to find session, ask other
@@ -38,10 +42,23 @@ public class SessionHolderController implements PacketListener {
             return;
         }
         //FOUND FREE SESSION
+        sessionUnit.reserve(packet.getPacketId());
         server.sendPacket(Packet.of(new SessionFoundPacket(packet.getPacketId())));
     }
 
+    @PacketHandler
+    private void onSessionGetCallbackRequestPacketReceive(SessionGetCallbackRequestPacket packet, Packet source, Socket sender) {
+
+    }
+
+
     private SessionUnit getFreeSession(Class<? extends AbstractGame> gameType) {
+        for (SessionUnit sessionUnit : sessionUnits) {
+            if (sessionUnit.isReserved()) {
+                continue;
+            }
+            return sessionUnit;
+        }
         return null;
     }
 
