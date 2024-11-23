@@ -1,7 +1,7 @@
 package me.fbiflow.test;
 
-import me.fbiflow.remapped.core.model.PartyManager;
-import me.fbiflow.remapped.core.model.QueueManager;
+import me.fbiflow.remapped.core.model.user.PartyManager;
+import me.fbiflow.remapped.core.model.user.QueueManager;
 
 import java.util.List;
 

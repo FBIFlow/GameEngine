@@ -1,4 +1,4 @@
-package me.fbiflow.remapped.core.model;
+package me.fbiflow.remapped.core.model.user;
 
 import me.fbiflow.remapped.core.model.game.AbstractGame;
 import me.fbiflow.remapped.core.model.wrapper.internal.Player;
@@ -13,7 +13,6 @@ public class QueueItem {
     private final List<Player> members;
     private Class<? extends AbstractGame> gameType;
     private int maxPlayers = 48;
-    private boolean registered;
 
     {
         this.uuid = UUID.randomUUID();
@@ -36,16 +35,20 @@ public class QueueItem {
         return members.size() == maxPlayers;
     }
 
-    public List<Player> getMembers() {
-        return this.members;
-    }
-
-    public List<Player> getMembersCopy() {
+    protected List<Player> getMembers() {
         return new ArrayList<>(this.members);
     }
 
-    public Class<? extends AbstractGame> getGameType() {
+    protected Class<? extends AbstractGame> getGameType() {
         return this.gameType;
+    }
+
+    protected void addMember(Player player) {
+        this.members.add(player);
+    }
+
+    protected void removeMember(Player player) {
+        this.members.remove(player);
     }
 
     public void setGameType(Class<? extends AbstractGame> gameType) {
@@ -62,14 +65,6 @@ public class QueueItem {
         return this.maxPlayers;
     }
 
-    public boolean isRegistered() {
-        return this.registered;
-    }
-
-    public void setRegistered(boolean registered) {
-        this.registered = registered;
-    }
-
     @Override
     public String toString() {
         return "QueueItem{" +
@@ -77,7 +72,6 @@ public class QueueItem {
                 ", \nmembers=" + members +
                 ", \ngameType=" + gameType +
                 ", \nmaxPlayers=" + maxPlayers +
-                ", \nregistered=" + registered +
                 "\n}";
     }
 }

@@ -1,12 +1,10 @@
-package me.fbiflow.remapped.core.model;
+package me.fbiflow.remapped.core.model.user;
 
 import me.fbiflow.remapped.core.model.game.AbstractGame;
 import me.fbiflow.remapped.core.model.game.GameManager;
 import me.fbiflow.remapped.core.model.wrapper.internal.Player;
 import me.fbiflow.remapped.util.LoggerUtil;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -18,7 +16,6 @@ import static java.lang.String.format;
 
 public class QueueManager {
 
-    private static final Logger log = LoggerFactory.getLogger(QueueManager.class);
     private final LoggerUtil logger = new LoggerUtil(" | [QueueManager] -> ");
 
     private final ArrayList<QueueItem> queue;
@@ -48,7 +45,7 @@ public class QueueManager {
                 queueItem = createQueueItem();
                 queueItem.setGameType(gameType);
             }
-            queueItem.getMembers().add(player);
+            queueItem.addMember(player);
             logger.log(format("Player %s (hash:%s) joined queue %s with game type: %s", player, player.hashCode(), queueItem.hashCode(), gameType.getName()));
             return queueItem;
         }
@@ -69,7 +66,7 @@ public class QueueManager {
             }
         }
 
-        List<Player> partyMembers = new ArrayList<>(party.getMembers());
+        List<Player> partyMembers = party.getMembers();
         int partyMembersCount = partyMembers.size();
         if (partyMembersCount > GameManager.getMaxPlayers(gameType)) {
             //TODO: send message to player
@@ -88,7 +85,7 @@ public class QueueManager {
             queueItem.setGameType(gameType);
         }
         for (Player p : partyMembers) {
-            queueItem.getMembers().add(p);
+            queueItem.addMember(p);
             //TODO: send message to player
         }
         logger.log(format("Player %s (hash:%s) joined queue %s with game type: %s", player, player.hashCode(), queueItem.hashCode(), gameType.getName()));
@@ -112,7 +109,7 @@ public class QueueManager {
         if (party != null) {
             if (party.getOwner() != player) {
                 partyManager.leaveParty(player);
-                queueItem.getMembers().remove(player);
+                queueItem.removeMember(player);
                 logger.log(format("Player %s left from queue and party", player.getName()));
                 //TODO: send message (leave party and queue)
             } else {
@@ -120,17 +117,17 @@ public class QueueManager {
                 List<Player> partyMembers = new ArrayList<>(party.getMembers());
                 partyMembers.remove(owner);
 
-                queueItem.getMembers().remove(owner);
+                queueItem.removeMember(owner);
                 logger.log(format("Party owner %s and all players left queue", player.getName()));
                 //TODO: send message (owner leave and all players)
                 for (Player p : partyMembers) {
-                    queueItem.getMembers().remove(p);
+                    queueItem.removeMember(p);
                     //TODO: send message (leave queue because of owner)
                 }
             }
             return;
         }
-        queueItem.getMembers().remove(player);
+        queueItem.removeMember(player);
         logger.log(format("Player %s left queue", player.getName()));
         if (queueItem.isEmpty()) {
             removeQueueItemFromQueue(queueItem);
