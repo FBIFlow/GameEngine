@@ -1,4 +1,4 @@
-package me.fbiflow.remapped.core.model;
+package me.fbiflow.remapped.core.model.user;
 
 import me.fbiflow.remapped.core.model.wrapper.internal.Player;
 import me.fbiflow.remapped.util.LoggerUtil;

@@ -1,4 +1,4 @@
-package me.fbiflow.remapped.core.model;
+package me.fbiflow.remapped.core.model.user;
 
 import me.fbiflow.remapped.core.model.wrapper.internal.Player;
 
@@ -28,7 +28,7 @@ public class Party {
     }
 
     protected List<String> getPermissionLevel() {
-        return this.permissionLevel;
+        return new ArrayList<>(this.permissionLevel);
     }
 
     protected void setPermissionLevel(List<String> permissionLevel) {
