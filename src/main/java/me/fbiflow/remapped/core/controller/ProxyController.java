@@ -1,8 +1,8 @@
 package me.fbiflow.remapped.core.controller;
 
-import me.fbiflow.remapped.core.model.PartyManager;
-import me.fbiflow.remapped.core.model.QueueManager;
-import me.fbiflow.remapped.core.model.QueueItem;
+import me.fbiflow.remapped.core.model.user.PartyManager;
+import me.fbiflow.remapped.core.model.user.QueueManager;
+import me.fbiflow.remapped.core.model.user.QueueItem;
 import me.fbiflow.remapped.protocol.PacketHandler;
 import me.fbiflow.remapped.protocol.PacketHolder;
 import me.fbiflow.remapped.protocol.PacketListener;
