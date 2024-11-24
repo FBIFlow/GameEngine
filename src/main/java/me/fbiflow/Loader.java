@@ -1,18 +1,16 @@
 package me.fbiflow;
 
-import me.fbiflow.remapped.core.controller.LobbyController;
-import me.fbiflow.remapped.core.controller.ProxyController;
-import me.fbiflow.remapped.core.model.session.SessionHolder;
-import me.fbiflow.remapped.core.model.game.AbstractGame;
-import me.fbiflow.remapped.core.model.game.games.Pillars;
-import me.fbiflow.remapped.core.model.wrapper.internal.Player;
-import me.fbiflow.remapped.protocol.communication.SocketDataClient;
-import me.fbiflow.remapped.protocol.communication.SocketDataServer;
-import me.fbiflow.remapped.protocol.packet.Packet;
-import me.fbiflow.remapped.protocol.packet.packets.party.*;
-import me.fbiflow.remapped.protocol.packet.packets.queue.PlayerQueueJoinRequestPacket;
-import me.fbiflow.remapped.protocol.packet.packets.queue.PlayerQueueLeaveRequestPacket;
-import me.fbiflow.remapped.util.LoggerUtil;
+import me.fbiflow.gameengine.core.controller.LobbyController;
+import me.fbiflow.gameengine.core.model.SessionHolder;
+import me.fbiflow.gameengine.core.model.game.AbstractGame;
+import me.fbiflow.gameengine.core.model.game.games.Pillars;
+import me.fbiflow.gameengine.core.model.wrapper.internal.Player;
+import me.fbiflow.gameengine.protocol.communication.SocketDataClient;
+import me.fbiflow.gameengine.protocol.packet.Packet;
+import me.fbiflow.gameengine.protocol.packet.packets.party.*;
+import me.fbiflow.gameengine.protocol.packet.packets.queue.PlayerQueueJoinRequestPacket;
+import me.fbiflow.gameengine.protocol.packet.packets.queue.PlayerQueueLeaveRequestPacket;
+import me.fbiflow.gameengine.util.LoggerUtil;
 
 import java.util.List;
 import java.util.Scanner;
@@ -22,7 +20,7 @@ import static me.fbiflow.test.PlayerMock.getPlayer;
 public class Loader {
 
     public static void main() {
-        var proxyController = new ProxyController(new SocketDataServer(34646));
+        //var proxyController = new ProxyController(new SocketDataServer(34646));
         var lobbyController = new LobbyController(new SocketDataClient("localhost", 34646));
         List<SessionHolder> sessionHolders = List.of();
 //        var sessionHolderController = new SessionHolderController(new SocketDataClient("localhost", 34646), ));

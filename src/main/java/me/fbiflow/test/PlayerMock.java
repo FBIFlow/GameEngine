@@ -1,8 +1,8 @@
 package me.fbiflow.test;
 
 
-import me.fbiflow.remapped.core.model.wrapper.internal.Player;
-import me.fbiflow.remapped.util.LoggerUtil;
+import me.fbiflow.gameengine.core.model.wrapper.internal.Player;
+import me.fbiflow.gameengine.util.LoggerUtil;
 
 import java.util.*;
 

@@ -1,6 +1,6 @@
 name: GameEngine
 version: '1.0.0'
-main: me.fbiflow.remapped.BukkitLoader
+main: me.fbiflow.gameengine.Loader
 api-version: '1.20'
 commands:
   game-engine:
