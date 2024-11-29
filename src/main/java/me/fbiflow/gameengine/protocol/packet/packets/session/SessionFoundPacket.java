@@ -22,4 +22,12 @@ public class SessionFoundPacket extends AbstractPacket {
     public UUID getSessionId() {
         return this.sessionId;
     }
+
+    @Override
+    public String toString() {
+        return "SessionFoundPacket{" +
+                "packetId=" + packetId +
+                ", sessionId=" + sessionId +
+                '}';
+    }
 }

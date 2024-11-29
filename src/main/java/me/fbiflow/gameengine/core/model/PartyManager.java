@@ -12,7 +12,7 @@ import static java.lang.String.format;
 
 public class PartyManager {
 
-    private final LoggerUtil logger = new LoggerUtil(" | [PartyManager] -> ");
+    private final LoggerUtil logger = new LoggerUtil("| [PartyManager] ->");
 
     private final List<Party> parties;
 

@@ -12,6 +12,11 @@ public class Pillars extends AbstractGame {
     }
 
     @Override
+    public int getRequiredPlayers() {
+        return 4;
+    }
+
+    @Override
     public Map<String, Integer> getMaxPartyPlayers() {
         return Map.of(
                 "default", 4,

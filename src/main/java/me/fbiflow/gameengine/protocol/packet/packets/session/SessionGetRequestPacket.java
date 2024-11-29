@@ -22,4 +22,12 @@ public class SessionGetRequestPacket extends AbstractPacket {
     public Class<? extends AbstractGame> getGameType() {
         return this.gameType;
     }
+
+    @Override
+    public String toString() {
+        return "SessionGetRequestPacket{" +
+                "packetId=" + packetId +
+                ", gameType=" + gameType +
+                '}';
+    }
 }

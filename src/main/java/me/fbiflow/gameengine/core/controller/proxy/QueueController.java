@@ -2,28 +2,33 @@ package me.fbiflow.gameengine.core.controller.proxy;
 
 import me.fbiflow.gameengine.core.model.QueueItem;
 import me.fbiflow.gameengine.core.model.QueueManager;
-import me.fbiflow.gameengine.protocol.PacketHandler;
-import me.fbiflow.gameengine.protocol.PacketHolder;
-import me.fbiflow.gameengine.protocol.PacketListener;
+import me.fbiflow.gameengine.core.model.game.AbstractGame;
+import me.fbiflow.gameengine.protocol.communication.*;
+import me.fbiflow.gameengine.protocol.handle.CallbackService;
+import me.fbiflow.gameengine.protocol.handle.PacketHandler;
+import me.fbiflow.gameengine.protocol.handle.PacketListener;
 import me.fbiflow.gameengine.protocol.packet.Packet;
 import me.fbiflow.gameengine.protocol.packet.packets.queue.PlayerQueueJoinRequestPacket;
 import me.fbiflow.gameengine.protocol.packet.packets.queue.PlayerQueueLeaveRequestPacket;
+import me.fbiflow.gameengine.protocol.packet.packets.session.SessionGetRequestPacket;
 import me.fbiflow.gameengine.util.LoggerUtil;
 
 import java.net.Socket;
 
-public class QueueController extends PacketListener {
+public class QueueController implements PacketListener {
 
     private final QueueManager queueManager;
 
-    private PacketHolder server;
+    private final ProxyController proxyController;
+    private final SocketDataServer server;
 
-    private final LoggerUtil logger = new LoggerUtil(" | [QueueService] ->");
+    private final LoggerUtil logger = new LoggerUtil("| [QueueController] ->");
 
-    public QueueController(PacketHolder server) {
+    public QueueController(ProxyController proxyController) {
         this.queueManager = new QueueManager();
-        this.server = server;
-        startListener(this.server);
+        this.proxyController = proxyController;
+        this.server = proxyController.getServer();
+        CallbackService.getInstance().registerListener(this.server.getPacketProducer(), this);
     }
 
     public QueueManager getQueueManager() {
@@ -31,12 +36,21 @@ public class QueueController extends PacketListener {
     }
 
     @PacketHandler
-    private void onPlayerQueueJoin(PlayerQueueJoinRequestPacket packet, Packet source, Socket sender) {
+    private void onPlayerQueueJoinRequestPacketReceive(PlayerQueueJoinRequestPacket packet, Packet source, Socket sender) {
         QueueItem queueItem = queueManager.joinQueue(packet.getWhoJoins(), packet.getGameType());
+        if (queueItem.isValid()) {
+            findFreeSession(queueItem.getGameType());
+        }
     }
 
     @PacketHandler
-    private void onPlayerQueueLeave(PlayerQueueLeaveRequestPacket packet, Packet source, Socket sender) {
+    private void onPlayerQueueLeaveRequestPacketReceive(PlayerQueueLeaveRequestPacket packet, Packet source, Socket sender) {
         queueManager.leaveQueue(packet.getWhoLeaves());
     }
+
+    private void findFreeSession(Class<? extends AbstractGame> gameType) {
+        var packet = new SessionGetRequestPacket(gameType);
+
+    }
+
 }

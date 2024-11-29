@@ -16,4 +16,11 @@ public class SessionNotFoundPacket extends AbstractPacket {
     public UUID getPacketId() {
         return this.packetId;
     }
+
+    @Override
+    public String toString() {
+        return "SessionNotFoundPacket{" +
+                "packetId=" + packetId +
+                '}';
+    }
 }

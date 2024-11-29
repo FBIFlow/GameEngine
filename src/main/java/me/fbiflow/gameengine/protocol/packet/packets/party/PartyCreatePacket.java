@@ -14,4 +14,11 @@ public class PartyCreatePacket extends AbstractPacket {
     public Player getOwner() {
         return this.owner;
     }
+
+    @Override
+    public String toString() {
+        return "PartyCreatePacket{" +
+                "owner=" + owner +
+                '}';
+    }
 }

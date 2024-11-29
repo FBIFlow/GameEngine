@@ -21,4 +21,12 @@ public class PartyInviteAcceptPacket extends AbstractPacket {
     public Player getInvited() {
         return this.invited;
     }
+
+    @Override
+    public String toString() {
+        return "PartyInviteAcceptPacket{" +
+                "sender=" + sender +
+                ", invited=" + invited +
+                '}';
+    }
 }

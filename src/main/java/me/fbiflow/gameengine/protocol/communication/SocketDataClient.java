@@ -1,22 +1,28 @@
 package me.fbiflow.gameengine.protocol.communication;
 
-import me.fbiflow.gameengine.protocol.PacketHolder;
+import me.fbiflow.gameengine.protocol.handle.PacketProducer;
+import me.fbiflow.gameengine.protocol.packet.AbstractPacket;
 import me.fbiflow.gameengine.protocol.packet.Packet;
+import me.fbiflow.gameengine.util.LoggerUtil;
+import me.fbiflow.gameengine.util.SerializeUtil;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.*;
 
-public class SocketDataClient implements PacketHolder {
+import static java.lang.String.format;
+
+public class SocketDataClient {
 
     private Socket socket;
 
-    private final Map<Socket, List<Packet>> receivedPackets = Collections.synchronizedMap(new HashMap<>());
-
     private ObjectInputStream objectInputStream;
     private ObjectOutputStream objectOutputStream;
+
+    private PacketProducer packetProducer;
+
+    private LoggerUtil logger = new LoggerUtil("| [SocketDataClient] ->");
 
     public SocketDataClient(String host, int port) {
         try {
@@ -25,6 +31,13 @@ public class SocketDataClient implements PacketHolder {
         } catch (IOException  e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public PacketProducer getPacketProducer() {
+        if (packetProducer == null) {
+            packetProducer = PacketProducer.of(this);
+        }
+        return packetProducer;
     }
 
     public void sendPacket(Packet packet) {
@@ -41,6 +54,7 @@ public class SocketDataClient implements PacketHolder {
 
     private void startPacketListener() {
         Thread packetListener = new Thread(() -> {
+            this.packetProducer = getPacketProducer();
             try {
                 if (objectInputStream == null) {
                     objectInputStream = new ObjectInputStream(socket.getInputStream());
@@ -50,12 +64,8 @@ public class SocketDataClient implements PacketHolder {
                         break;
                     }
                     Packet packet = (Packet) objectInputStream.readObject();
-                    List<Packet> packets = receivedPackets.get(socket);
-                    if (packets == null) {
-                        packets = new ArrayList<>();
-                    }
-                    packets.add(packet);
-                    receivedPackets.put(socket, packets);
+                    logReceive(packet, socket);
+                    packetProducer.produce(packet, socket);
                 }
             } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
@@ -72,8 +82,15 @@ public class SocketDataClient implements PacketHolder {
         packetListener.start();
     }
 
-    @Override
-    public Map<Socket, List<Packet>> getReceivedPackets() {
-        return this.receivedPackets;
+    private void logReceive(Packet packet, Socket sender) throws IOException, ClassNotFoundException {
+        AbstractPacket abstractPacket = (AbstractPacket) SerializeUtil.deserialize(packet.abstractPacket());
+        logger.log(format("received packet: {\n\t%s{%s}\n\t%s{%s}\n\t{%s}\n\t%s\n}",
+                packet.getClass().getSimpleName(),
+                packet.hashCode(),
+                abstractPacket.getClass().getSimpleName(),
+                abstractPacket.hashCode(),
+                abstractPacket,
+                sender.getRemoteSocketAddress()
+        ));
     }
 }

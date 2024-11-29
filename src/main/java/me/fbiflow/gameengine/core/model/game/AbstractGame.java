@@ -6,6 +6,8 @@ public abstract class AbstractGame {
 
     public abstract int getMaxPlayers();
 
+    public abstract int getRequiredPlayers();
+
     public abstract Map<String, Integer> getMaxPartyPlayers();
 
     public abstract void onInit();

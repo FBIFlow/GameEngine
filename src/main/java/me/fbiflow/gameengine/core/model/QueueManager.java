@@ -4,6 +4,10 @@ import me.fbiflow.gameengine.core.model.game.AbstractGame;
 import me.fbiflow.gameengine.core.model.game.GameManager;
 import me.fbiflow.gameengine.core.model.wrapper.internal.Player;
 import me.fbiflow.gameengine.util.LoggerUtil;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Registry;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
@@ -16,7 +20,7 @@ import static java.lang.String.format;
 
 public class QueueManager {
 
-    private final LoggerUtil logger = new LoggerUtil(" | [QueueManager] -> ");
+    private final LoggerUtil logger = new LoggerUtil("| [QueueManager] ->");
 
     private final ArrayList<QueueItem> queue;
     private final PartyManager partyManager;

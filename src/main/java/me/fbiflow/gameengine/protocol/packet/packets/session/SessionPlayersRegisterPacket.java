@@ -24,4 +24,12 @@ public class SessionPlayersRegisterPacket extends AbstractPacket {
     public List<Player> getPlayers() {
         return this.players;
     }
+
+    @Override
+    public String toString() {
+        return "SessionPlayersRegisterPacket{" +
+                "packetId=" + packetId +
+                ", players=" + players +
+                '}';
+    }
 }

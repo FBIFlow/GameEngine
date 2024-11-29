@@ -1,15 +1,14 @@
 package me.fbiflow.gameengine.core.controller;
 
-import me.fbiflow.gameengine.protocol.PacketHandler;
-import me.fbiflow.gameengine.protocol.PacketListener;
+import me.fbiflow.gameengine.protocol.enums.ClientType;
+import me.fbiflow.gameengine.protocol.handle.PacketListener;
 import me.fbiflow.gameengine.protocol.communication.SocketDataClient;
+import me.fbiflow.gameengine.protocol.handle.CallbackService;
 import me.fbiflow.gameengine.protocol.packet.Packet;
-import me.fbiflow.gameengine.protocol.packet.packets.party.PartyCreatePacket;
+import me.fbiflow.gameengine.protocol.packet.packets.ClientRegisterPacket;
 import me.fbiflow.gameengine.util.LoggerUtil;
 
-import java.net.Socket;
-
-public class LobbyController extends PacketListener {
+public class LobbyController implements PacketListener {
 
     private final LoggerUtil logger = new LoggerUtil(" | [LobbyController] -> ");
 
@@ -17,15 +16,12 @@ public class LobbyController extends PacketListener {
 
     public LobbyController(SocketDataClient client) {
         this.client = client;
-        startListener(client);
+        CallbackService.getInstance().registerListener(client.getPacketProducer(), this);
+        client.sendPacket(
+                Packet.of(new ClientRegisterPacket(ClientType.LOBBY_CONTROLLER))
+        );
     }
 
-    @PacketHandler
-    private void onPartyCreatePacketReceive(PartyCreatePacket packet, Packet source, Socket sender) {
-
-    }
-
-    @Deprecated(forRemoval = true)
     public SocketDataClient getConnection() {
         return this.client;
     }

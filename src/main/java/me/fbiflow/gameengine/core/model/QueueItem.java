@@ -1,6 +1,7 @@
 package me.fbiflow.gameengine.core.model;
 
 import me.fbiflow.gameengine.core.model.game.AbstractGame;
+import me.fbiflow.gameengine.core.model.game.GameManager;
 import me.fbiflow.gameengine.core.model.wrapper.internal.Player;
 
 import java.util.ArrayList;
@@ -31,6 +32,10 @@ public class QueueItem {
         return this.members.isEmpty();
     }
 
+    public boolean isValid() {
+        return members.size() >= GameManager.getRequiredPlayers(gameType);
+    }
+
     public boolean isFull() {
         return members.size() == maxPlayers;
     }
@@ -39,7 +44,7 @@ public class QueueItem {
         return new ArrayList<>(this.members);
     }
 
-    protected Class<? extends AbstractGame> getGameType() {
+    public Class<? extends AbstractGame> getGameType() {
         return this.gameType;
     }
 

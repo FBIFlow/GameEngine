@@ -1,6 +1,11 @@
 package me.fbiflow.gameengine.util;
 
-import java.time.LocalTime;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+
+import static java.lang.String.format;
 
 public class LoggerUtil {
 
@@ -11,7 +16,9 @@ public class LoggerUtil {
     }
 
     public void log(String text) {
-        System.out.println(LocalTime.now() + prefix + text);
+        LocalDateTime t = LocalDateTime.now();
+        String time = format("[%s.%s.%s] %s:%s:%s",
+                t.getYear(), t.getMonthValue(), t.getDayOfMonth(), t.getHour(), t.getMinute(), t.getSecond());
+        System.out.printf("%s %s %s%n", time, prefix, text);
     }
-
 }

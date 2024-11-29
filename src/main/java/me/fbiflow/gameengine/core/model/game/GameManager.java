@@ -6,17 +6,23 @@ import java.util.Map;
 public class GameManager {
 
     public static int getMaxPlayers(Class<? extends AbstractGame> gameType) {
-        try {
-            return gameType.getConstructor().newInstance().getMaxPlayers();
-        } catch (InstantiationException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
+        return createInstance(gameType).getMaxPlayers();
+    }
+
+    public static int getRequiredPlayers(Class<? extends AbstractGame> gameType) {
+        return createInstance(gameType).getRequiredPlayers();
     }
 
     public static Map<String, Integer> getMaxPartyPlayers(Class<? extends AbstractGame> gameType) {
+        return createInstance(gameType).getMaxPartyPlayers();
+
+    }
+
+    private static AbstractGame createInstance(Class<? extends AbstractGame> gameType) {
         try {
-            return gameType.getConstructor().newInstance().getMaxPartyPlayers();
-        } catch (InstantiationException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            return gameType.getConstructor().newInstance();
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                 NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
     }

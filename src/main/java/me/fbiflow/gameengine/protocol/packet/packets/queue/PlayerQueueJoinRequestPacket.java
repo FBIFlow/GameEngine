@@ -21,4 +21,12 @@ public class PlayerQueueJoinRequestPacket extends AbstractPacket {
     public Class<? extends AbstractGame> getGameType() {
         return this.gameType;
     }
+
+    @Override
+    public String toString() {
+        return "PlayerQueueJoinRequestPacket{" +
+                "whoJoins=" + whoJoins +
+                ", gameType=" + gameType +
+                '}';
+    }
 }

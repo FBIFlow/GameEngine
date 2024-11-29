@@ -14,4 +14,11 @@ public class PartyLeavePacket extends AbstractPacket {
     public Player getWhoLeaves() {
         return this.whoLeaves;
     }
+
+    @Override
+    public String toString() {
+        return "PartyLeavePacket{" +
+                "whoLeaves=" + whoLeaves +
+                '}';
+    }
 }

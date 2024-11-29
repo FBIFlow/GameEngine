@@ -1,4 +1,4 @@
-package me.fbiflow.gameengine.core.model;
+package me.fbiflow.gameengine.core.controller.service;
 
 import me.fbiflow.gameengine.core.model.game.AbstractGame;
 

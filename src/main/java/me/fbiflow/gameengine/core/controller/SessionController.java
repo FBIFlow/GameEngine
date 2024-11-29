@@ -2,8 +2,10 @@ package me.fbiflow.gameengine.core.controller;
 
 import me.fbiflow.gameengine.core.model.SessionHolder;
 import me.fbiflow.gameengine.core.model.game.AbstractGame;
-import me.fbiflow.gameengine.protocol.PacketHandler;
-import me.fbiflow.gameengine.protocol.PacketListener;
+import me.fbiflow.gameengine.protocol.handle.CallbackService;
+import me.fbiflow.gameengine.protocol.handle.PacketProducer;
+import me.fbiflow.gameengine.protocol.handle.PacketHandler;
+import me.fbiflow.gameengine.protocol.handle.PacketListener;
 import me.fbiflow.gameengine.protocol.communication.SocketDataClient;
 import me.fbiflow.gameengine.protocol.packet.Packet;
 import me.fbiflow.gameengine.protocol.packet.packets.session.SessionFoundPacket;
@@ -17,22 +19,26 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class SessionController extends PacketListener {
+public class SessionController implements PacketListener {
 
-    private final LoggerUtil logger = new LoggerUtil(" | [SessionController] -> ");
+    private final LoggerUtil logger = new LoggerUtil("| [SessionController] ->");
 
     private final List<SessionHolder> sessionHolders;
 
     private final SocketDataClient server;
 
-    public SessionController(String host, int port, List<SessionHolder> sessionHolders) {
+    public SessionController(SocketDataClient client, List<SessionHolder> sessionHolders) {
+        CallbackService.getInstance().registerListener(client.getPacketProducer(), this);
+
         this.sessionHolders = sessionHolders;
-        this.server = new SocketDataClient(host, port);
-        startListener(server);
+        this.server = client;
     }
 
     @PacketHandler
     private void onSessionGetRequest(SessionGetRequestPacket packet, Packet source, Socket sender) {
+        /*
+        TODO: on receive packet -> try find free session. send response
+         */
         UUID responseId =  packet.getPacketId();
         var gameType = packet.getGameType();
         List<SessionHolder> freeSessions = getFreeSessions(gameType);

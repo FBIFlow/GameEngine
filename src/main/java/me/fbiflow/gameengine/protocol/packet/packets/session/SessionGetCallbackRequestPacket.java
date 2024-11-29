@@ -14,4 +14,11 @@ public class SessionGetCallbackRequestPacket {
     public UUID getPacketId() {
         return this.packetId;
     }
+
+    @Override
+    public String toString() {
+        return "SessionGetCallbackRequestPacket{" +
+                "packetId=" + packetId +
+                '}';
+    }
 }

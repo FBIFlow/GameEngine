@@ -1,4 +1,4 @@
-package me.fbiflow.gameengine.protocol;
+package me.fbiflow.gameengine.protocol.handle;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

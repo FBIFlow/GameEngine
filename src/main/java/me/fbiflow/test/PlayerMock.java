@@ -3,12 +3,13 @@ package me.fbiflow.test;
 
 import me.fbiflow.gameengine.core.model.wrapper.internal.Player;
 import me.fbiflow.gameengine.util.LoggerUtil;
+import net.kyori.adventure.text.Component;
 
 import java.util.*;
 
 public class PlayerMock implements Player {
 
-    transient private final LoggerUtil logger = new LoggerUtil(" | [PlayerMock] -> ");
+    transient private final LoggerUtil logger = new LoggerUtil("| [PlayerMock] ->");
 
     private static final Map<String ,PlayerMock> playerExists = new HashMap<>();
 
@@ -36,6 +37,11 @@ public class PlayerMock implements Player {
     @Override
     public List<String> getPermissions() {
         return List.of("default");
+    }
+
+    @Override
+    public void sendMessage(Component message) {
+
     }
 
     @Override
