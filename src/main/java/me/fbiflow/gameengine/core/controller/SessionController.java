@@ -2,6 +2,7 @@ package me.fbiflow.gameengine.core.controller;
 
 import me.fbiflow.gameengine.core.model.SessionHolder;
 import me.fbiflow.gameengine.core.model.game.AbstractGame;
+import me.fbiflow.gameengine.core.model.game.GameManager;
 import me.fbiflow.gameengine.protocol.enums.ClientType;
 import me.fbiflow.gameengine.protocol.handle.CallbackService;
 import me.fbiflow.gameengine.protocol.handle.PacketHandler;
@@ -18,28 +19,32 @@ import me.fbiflow.gameengine.util.LoggerUtil;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class SessionController implements PacketListener {
 
     private final LoggerUtil logger = new LoggerUtil("| [SessionController] ->");
 
     private final List<SessionHolder> sessionHolders;
-
     private final SocketDataClient serverConnection;
+    private final Map<String, Integer> allowedGames;
 
     public SessionController(SocketDataClient serverConnection, List<SessionHolder> sessionHolders) {
         this.serverConnection = serverConnection;
         this.sessionHolders = sessionHolders;
+        this.allowedGames = new HashMap<>();
+        sessionHolders.forEach(sessionHolder -> {
+            sessionHolder.getAllowedGameTypes().forEach(gameType -> {
+                this.allowedGames.put(GameManager.getId(gameType), GameManager.hashCode(gameType));
+            });
+        });
 
         CallbackService.getInstance().registerListener(serverConnection.getPacketProducer(), this);
     }
 
     public void start() {
         serverConnection.sendPacket(Packet.of(
-                new ClientRegisterPacket(ClientType.SESSION_CONTROLLER)
+                new ClientRegisterPacket(ClientType.SESSION_CONTROLLER, allowedGames)
         ));
     }
 

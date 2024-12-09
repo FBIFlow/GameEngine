@@ -77,14 +77,15 @@ public class QueueManager {
 
         List<Player> partyMembers = party.getMembers();
         int partyMembersCount = partyMembers.size();
-        if (partyMembersCount > GameManager.getMaxPlayers(gameType)) {
-            //TODO: send message to player
-            logger.log("Too many players in the party for this game.");
-            return null;
-        }
         if (partyMembersCount > allowedPartyPlayers) {
             //TODO: send message to player
-            logger.log("Too many players in the party for the allowed limit.");
+            logger.log("Too many players in the party (permission).");
+            return null;
+        }
+
+        if (partyMembersCount > GameManager.getMaxPlayers(gameType)) {
+            //TODO: send message to player
+            logger.error("THIS LOGIC CALLS ONLY IF (MAX_GAME_PLAYERS < MAX_PARTY_PLAYERS). Check game configuration");
             return null;
         }
 

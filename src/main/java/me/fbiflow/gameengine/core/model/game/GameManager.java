@@ -5,6 +5,14 @@ import java.util.Map;
 
 public class GameManager {
 
+    public static String getId(Class<? extends AbstractGame> gameType) {
+        return createInstance(gameType).getId();
+    }
+
+    public static int hashCode(Class<? extends AbstractGame> gameType) {
+        return createInstance(gameType).hashCode();
+    }
+
     public static int getMaxPlayers(Class<? extends AbstractGame> gameType) {
         return createInstance(gameType).getMaxPlayers();
     }

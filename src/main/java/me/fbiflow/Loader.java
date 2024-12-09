@@ -3,6 +3,7 @@ package me.fbiflow;
 import me.fbiflow.gameengine.core.controller.LobbyController;
 import me.fbiflow.gameengine.core.controller.SessionController;
 import me.fbiflow.gameengine.core.controller.proxy.ProxyController;
+import me.fbiflow.gameengine.core.model.SessionHolder;
 import me.fbiflow.gameengine.core.model.game.games.Pillars;
 import me.fbiflow.gameengine.protocol.communication.SocketDataClient;
 import me.fbiflow.gameengine.protocol.communication.SocketDataServer;
@@ -15,9 +16,19 @@ import static me.fbiflow.test.PlayerMock.getPlayer;
 
 public class Loader {
 
-    private static final ProxyController proxyController = new ProxyController(new SocketDataServer(32544));
-    private static final LobbyController lobbyController = new LobbyController(new SocketDataClient("localhost", 32544));
-    private static final SessionController sessionController = new SessionController(new SocketDataClient("localhost", 32544), List.of());
+    private static final ProxyController proxyController
+            = new ProxyController(new SocketDataServer(32544), List.of(Pillars.class));
+    private static final LobbyController lobbyController
+            = new LobbyController(new SocketDataClient("localhost", 32544));
+    private static final SessionController sessionController
+            = new SessionController(new SocketDataClient("localhost", 32544),
+            List.of(
+                    new SessionHolder(List.of(Pillars.class)),
+                    new SessionHolder(List.of(Pillars.class)),
+                    new SessionHolder(List.of(Pillars.class)),
+                    new SessionHolder(List.of(Pillars.class))
+                    )
+    );
 
     public static void main(String[] args) {
 

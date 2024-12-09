@@ -22,7 +22,7 @@ public class LobbyController implements PacketListener {
 
     public void start() {
         serverConnection.sendPacket(Packet.of(
-                new ClientRegisterPacket(ClientType.LOBBY_CONTROLLER)
+                new ClientRegisterPacket(ClientType.LOBBY_CONTROLLER, null)
         ));
     }
 

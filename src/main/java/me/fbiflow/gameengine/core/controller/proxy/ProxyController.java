@@ -1,5 +1,7 @@
 package me.fbiflow.gameengine.core.controller.proxy;
 
+import me.fbiflow.gameengine.core.model.game.AbstractGame;
+import me.fbiflow.gameengine.core.model.game.GameManager;
 import me.fbiflow.gameengine.protocol.communication.SocketDataServer;
 import me.fbiflow.gameengine.protocol.enums.ClientType;
 import me.fbiflow.gameengine.protocol.handle.CallbackService;
@@ -27,7 +29,8 @@ public class ProxyController implements PacketListener {
     private final List<Socket> lobbyControllers = new ArrayList<>();
     private final List<Socket> sessionControllers = new ArrayList<>();
 
-    public ProxyController(SocketDataServer server) {
+    public ProxyController(SocketDataServer server, List<Class<? extends AbstractGame>> allowedGames) {
+        //TODO: register all allowed games and then check valid when new session controller connects
         this.server = server;
         CallbackService.getInstance().registerListener(this.server.getPacketProducer(), this);
     }
@@ -75,8 +78,9 @@ public class ProxyController implements PacketListener {
                 lobbyControllers.add(sender);
             }
             case SESSION_CONTROLLER -> {
+                //TODO: validate game settings (сравнить экземпляры игр для прокси и контроллера сессий)
                 if (sessionControllers.contains(sender)) {
-                    throw new IllegalStateException("received ClientUnregisterPacket, but client not registered as session");
+                    throw new IllegalStateException("received ClientUnregisterPacket, but client already registered as session");
                 }
                 sessionControllers.add(sender);
             }
