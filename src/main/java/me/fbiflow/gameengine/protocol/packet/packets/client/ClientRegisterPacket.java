@@ -1,4 +1,4 @@
-package me.fbiflow.gameengine.protocol.packet.packets;
+package me.fbiflow.gameengine.protocol.packet.packets.client;
 
 import me.fbiflow.gameengine.protocol.enums.ClientType;
 import me.fbiflow.gameengine.protocol.packet.AbstractPacket;

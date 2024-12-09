@@ -1,4 +1,4 @@
-package me.fbiflow.gameengine.protocol.packet.packets.session;
+package me.fbiflow.gameengine.protocol.packet.packets.server.session;
 
 import me.fbiflow.gameengine.core.model.game.AbstractGame;
 import me.fbiflow.gameengine.protocol.packet.AbstractPacket;

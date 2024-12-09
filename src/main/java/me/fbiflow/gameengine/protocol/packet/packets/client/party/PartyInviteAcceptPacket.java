@@ -1,14 +1,15 @@
-package me.fbiflow.gameengine.protocol.packet.packets.party;
+package me.fbiflow.gameengine.protocol.packet.packets.client.party;
 
 import me.fbiflow.gameengine.core.model.wrapper.internal.Player;
 import me.fbiflow.gameengine.protocol.packet.AbstractPacket;
 
-public class PartyInviteRemovePacket extends AbstractPacket {
+public class PartyInviteAcceptPacket extends AbstractPacket {
 
     private final Player sender;
     private final Player invited;
 
-    public PartyInviteRemovePacket(Player sender, Player invited) {
+
+    public PartyInviteAcceptPacket(Player sender, Player invited) {
         this.sender = sender;
         this.invited = invited;
     }
@@ -23,7 +24,7 @@ public class PartyInviteRemovePacket extends AbstractPacket {
 
     @Override
     public String toString() {
-        return "PartyInviteRemovePacket{" +
+        return "PartyInviteAcceptPacket{" +
                 "sender=" + sender +
                 ", invited=" + invited +
                 '}';

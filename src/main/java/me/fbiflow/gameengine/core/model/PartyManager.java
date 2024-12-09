@@ -63,7 +63,7 @@ public class PartyManager {
         if (party.getOwner() == player) {
             members.remove(player);
             removeInvites(player);
-            party.setOwner(members.getFirst());
+            party.setOwner(members.get(0));
             party.setPermissionLevel(party.getOwner().getPermissions());
             //TODO: send message (new owner)
             logger.log(format("Player %s is new owner of party %s", party.getOwner(), party));

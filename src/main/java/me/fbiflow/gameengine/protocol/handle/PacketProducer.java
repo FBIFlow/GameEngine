@@ -41,7 +41,7 @@ public class PacketProducer {
             if (packetList.isEmpty()) {
                 continue;
             }
-            Packet packet = packetList.removeFirst();
+            Packet packet = packetList.remove(0);
             return Map.of(socket, packet);
         }
         return null;

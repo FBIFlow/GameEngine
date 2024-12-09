@@ -40,6 +40,7 @@ public class QueueManager {
      * @param player who joins
      * @param gameType type of required game
      */
+    @Nullable
     public QueueItem joinQueue(Player player, Class<? extends AbstractGame> gameType) {
         if (getPlayerQueueItem(player) != null) {
             //TODO: send message to player

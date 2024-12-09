@@ -15,4 +15,5 @@ public class ChatView {
         players.forEach(p -> p.sendMessage(message));
     }
 
+
 }

@@ -24,6 +24,7 @@ public class CallbackService {
     private final LoggerUtil logger = new LoggerUtil(format("| [%s] ->", this.getClass().getSimpleName()));
 
     private CallbackService() {
+        start();
     }
 
     public static CallbackService getInstance() {
@@ -63,10 +64,12 @@ public class CallbackService {
         listenersMap.put(packetProducer, listeners);
     }
 
-    public void start() {
+    private void start() {
         Runnable callbackServiceTask = () -> {
             while (true) {
-                listenersMap.forEach((producer, listeners) -> {
+                for (Map.Entry<PacketProducer, List<PacketListener>> entry : new HashMap<>(listenersMap).entrySet()) {
+                    PacketProducer producer = entry.getKey();
+                    List<PacketListener> listeners = entry.getValue();
                     PacketProducer p = producer;
                     List<PacketListener> l = listeners;
                     for (Map<Socket, Packet> packets; (packets = p.pull()) != null; ) {
@@ -77,7 +80,7 @@ public class CallbackService {
                             }
                         }
                     }
-                });
+                }
             }
         };
         Thread thread = new Thread(callbackServiceTask);
@@ -95,11 +98,11 @@ public class CallbackService {
 
         Method method = getMethod(listener, abstractPacket);
         if (method == null) {
-            logger.log(format("Could not to find handler for packet: %s{%s} in %s{%s}",
+            /*logger.log(format("Could not to find handler for packet: %s{%s} in %s{%s}",
                     source.packetClass().getSimpleName(),
                     source.hashCode(),
                     listener.getClass().getSimpleName(),
-                    listener.hashCode()));
+                    listener.hashCode()));*/
             return;
         }
         logger.log(format("Handled source: %s{%s} in: %s{%s}",

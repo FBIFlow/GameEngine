@@ -6,9 +6,13 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.Random;
 import java.util.UUID;
 
+/**
+ * @param uuid unique id of packet
+ * @param abstractPacket byte array of data
+ * @param packetClass type of data
+ */
 public record Packet(UUID uuid, byte[] abstractPacket, Class<? extends AbstractPacket> packetClass) implements Serializable {
 
     public static Packet of(AbstractPacket packet) {
@@ -23,7 +27,6 @@ public record Packet(UUID uuid, byte[] abstractPacket, Class<? extends AbstractP
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Packet packet = (Packet) o;
         return ((Packet) o).uuid == this.uuid;
     }
 

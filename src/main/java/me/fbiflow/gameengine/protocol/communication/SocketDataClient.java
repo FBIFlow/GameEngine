@@ -33,6 +33,10 @@ public class SocketDataClient {
         }
     }
 
+    public String getAddress() {
+        return socket.toString();
+    }
+
     public PacketProducer getPacketProducer() {
         if (packetProducer == null) {
             packetProducer = PacketProducer.of(this);

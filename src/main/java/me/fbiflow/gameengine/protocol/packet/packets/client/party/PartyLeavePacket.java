@@ -1,13 +1,13 @@
-package me.fbiflow.gameengine.protocol.packet.packets.queue;
+package me.fbiflow.gameengine.protocol.packet.packets.client.party;
 
 import me.fbiflow.gameengine.core.model.wrapper.internal.Player;
 import me.fbiflow.gameengine.protocol.packet.AbstractPacket;
 
-public class PlayerQueueLeaveRequestPacket extends AbstractPacket {
+public class PartyLeavePacket extends AbstractPacket {
 
     private final Player whoLeaves;
 
-    public PlayerQueueLeaveRequestPacket(Player whoLeaves) {
+    public PartyLeavePacket(Player whoLeaves) {
         this.whoLeaves = whoLeaves;
     }
 
@@ -17,7 +17,7 @@ public class PlayerQueueLeaveRequestPacket extends AbstractPacket {
 
     @Override
     public String toString() {
-        return "PlayerQueueLeaveRequestPacket{" +
+        return "PartyLeavePacket{" +
                 "whoLeaves=" + whoLeaves +
                 '}';
     }

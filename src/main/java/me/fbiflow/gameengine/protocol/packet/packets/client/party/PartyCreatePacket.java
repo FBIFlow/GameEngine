@@ -1,4 +1,4 @@
-package me.fbiflow.gameengine.protocol.packet.packets.party;
+package me.fbiflow.gameengine.protocol.packet.packets.client.party;
 
 import me.fbiflow.gameengine.core.model.wrapper.internal.Player;
 import me.fbiflow.gameengine.protocol.packet.AbstractPacket;

@@ -25,4 +25,13 @@ public class SessionHolder {
     public List<Class<? extends AbstractGame>> getAllowedGameTypes() {
         return this.allowedGameTypes;
     }
+
+    public boolean isBusy() {
+        return sessionExecutor != null;
+    }
+
+    public void registerGame(Class<? extends AbstractGame> gameType) {
+        this.sessionExecutor = new SessionExecutor(gameType);
+    }
+
 }
