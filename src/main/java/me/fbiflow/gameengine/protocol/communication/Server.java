@@ -16,35 +16,30 @@ import java.util.List;
 
 import static java.lang.String.format;
 
-public class SocketDataServer {
-
-    private final ServerSocket server;
+public class Server {
 
     private final List<Socket> clients = new ArrayList<>();
     private final List<Socket> lobbies = new ArrayList<>();
     private final List<Socket> sessions = new ArrayList<>();
+    private final int port;
+    private final PacketProducer packetProducer;
 
-    private PacketProducer packetProducer;
+    private ServerSocket server;
 
     private LoggerUtil logger = new LoggerUtil("| [SocketDataServer] ->");
+    private ObjectOutputStream objectOutputStream = null;
 
-    public SocketDataServer(int port) {
+    public Server(int port, PacketProducer packetProducer) {
+        this.port = port;
+        this.packetProducer = packetProducer;
+    }
+
+    public void start() {
         try {
             this.server = new ServerSocket(port);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public PacketProducer getPacketProducer() {
-        if (packetProducer == null) {
-            packetProducer = PacketProducer.of(this);
-        }
-        return packetProducer;
-    }
-
-    public void start() {
-        this.packetProducer = getPacketProducer();
         Thread connectionListener = new Thread(() -> {
             try {
                 while (true) {
@@ -59,8 +54,6 @@ public class SocketDataServer {
         });
         connectionListener.start();
     }
-
-    private ObjectOutputStream objectOutputStream = null;
 
     public void sendPacket(Socket socket, Packet packet) {
         try {
@@ -92,7 +85,7 @@ public class SocketDataServer {
 
     private void logReceive(Packet packet, Socket sender) throws IOException, ClassNotFoundException {
         AbstractPacket abstractPacket = (AbstractPacket) SerializeUtil.deserialize(packet.abstractPacket());
-        logger.log(format("received packet: {\n\t%s{%s}\n\t%s{%s}\n\t{%s}\n\t%s\n}",
+        logger.log(format("Received packet: {\n\t%s{%s}\n\t%s{%s}\n\t{%s}\n\t%s\n}",
                 packet.getClass().getSimpleName(),
                 packet.hashCode(),
                 abstractPacket.getClass().getSimpleName(),

@@ -40,12 +40,12 @@ public class QueueManager {
      * @param player who joins
      * @param gameType type of required game
      */
-    @Nullable
-    public QueueItem joinQueue(Player player, Class<? extends AbstractGame> gameType) {
+    public WrappedQueueItem joinQueue(Player player, Class<? extends AbstractGame> gameType) {
         if (getPlayerQueueItem(player) != null) {
             //TODO: send message to player
-            logger.log(format("Player %s is already in the queue.", player));
-            return null;
+            String reason = format("Player %s is already in the queue.", player);
+            logger.log(reason);
+            return new WrappedQueueItem(reason);
         }
 
         if (!partyManager.isPlayerInParty(player)) {
@@ -56,14 +56,15 @@ public class QueueManager {
             }
             queueItem.addMember(player);
             logger.log(format("Player %s (hash:%s) joined queue %s with game type: %s", player, player.hashCode(), queueItem.hashCode(), gameType.getName()));
-            return queueItem;
+            return new WrappedQueueItem(queueItem);
         }
 
         Party party = partyManager.getByMember(player);
         if (party.getOwner() != player) {
             //TODO: send message to player
-            logger.log("Cannot join queue. Only party owner can perform this.");
-            return null;
+            String reason = "Cannot join queue. Only party owner can perform this.";
+            logger.log(reason);
+            return new WrappedQueueItem(reason);
         }
 
         Map<String, Integer> maxPartyPlayersMap = GameManager.getMaxPartyPlayers(gameType);
@@ -79,14 +80,15 @@ public class QueueManager {
         int partyMembersCount = partyMembers.size();
         if (partyMembersCount > allowedPartyPlayers) {
             //TODO: send message to player
-            logger.log("Too many players in the party (permission).");
-            return null;
+            String reason = "Too many players in the party (permission).";
+            logger.log(reason);
+            return new WrappedQueueItem(reason);
         }
 
         if (partyMembersCount > GameManager.getMaxPlayers(gameType)) {
-            //TODO: send message to player
-            logger.error("THIS LOGIC CALLS ONLY IF (MAX_GAME_PLAYERS < MAX_PARTY_PLAYERS). Check game configuration");
-            return null;
+            String reason = "THIS LOGIC CALLS ONLY IF (MAX_GAME_PLAYERS < MAX_PARTY_PLAYERS). Check game configuration";
+            logger.error(reason);
+            return new WrappedQueueItem(reason);
         }
 
         QueueItem queueItem = getFreeQueueItem(gameType, partyMembersCount);
@@ -99,7 +101,7 @@ public class QueueManager {
             //TODO: send message to player
         }
         logger.log(format("Player %s (hash:%s) joined queue %s with game type: %s", player, player.hashCode(), queueItem.hashCode(), gameType.getName()));
-        return queueItem;
+        return new WrappedQueueItem(queueItem);
     }
 
 
@@ -205,7 +207,7 @@ public class QueueManager {
     @Nullable
     private QueueItem getFreeQueueItem(Class<? extends AbstractGame> gameType, int freeSlots) {
         for (QueueItem queueItem : queue) {
-            if (queueItem.getGameType() == gameType && queueItem.getMembers().size() + freeSlots <= queueItem.getMaxPlayers()) {
+            if (queueItem.getGameType() == gameType && queueItem.getMembersCopy().size() + freeSlots <= queueItem.getMaxPlayers()) {
                 return queueItem;
             }
         }
@@ -221,7 +223,7 @@ public class QueueManager {
     @Nullable
     private QueueItem getPlayerQueueItem(Player player) {
         for (QueueItem queueItem : queue) {
-            if (queueItem.getMembers().contains(player)) {
+            if (queueItem.getMembersCopy().contains(player)) {
                 return queueItem;
             }
         }

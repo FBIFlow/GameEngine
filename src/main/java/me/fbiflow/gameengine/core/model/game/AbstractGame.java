@@ -13,11 +13,19 @@ public abstract class AbstractGame {
         });
     }
 
-    public abstract String getId();
+    public String getId() {
+        return this.getClass().getSimpleName();
+    }
 
     public abstract int getMaxPlayers();
 
     public abstract int getRequiredPlayers();
+
+    /**
+     * k - current queue item players
+     * v - timer reset value
+     */
+    public abstract Map<Integer, Integer> getPlayerTimerMap();
 
     /**
      * @return map <br>

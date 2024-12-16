@@ -2,46 +2,65 @@ package me.fbiflow.gameengine.core.controller.proxy;
 
 import me.fbiflow.gameengine.core.model.game.AbstractGame;
 import me.fbiflow.gameengine.core.model.game.GameManager;
-import me.fbiflow.gameengine.protocol.communication.SocketDataServer;
+import me.fbiflow.gameengine.protocol.communication.Server;
 import me.fbiflow.gameengine.protocol.enums.ClientType;
-import me.fbiflow.gameengine.protocol.handle.CallbackService;
+import me.fbiflow.gameengine.protocol.handle.PacketHandleService;
 import me.fbiflow.gameengine.protocol.handle.PacketHandler;
 import me.fbiflow.gameengine.protocol.handle.PacketListener;
+import me.fbiflow.gameengine.protocol.handle.PacketProducer;
 import me.fbiflow.gameengine.protocol.packet.Packet;
+import me.fbiflow.gameengine.protocol.packet.packets.DataPacket;
 import me.fbiflow.gameengine.protocol.packet.packets.client.ClientRegisterPacket;
 import me.fbiflow.gameengine.protocol.packet.packets.client.ClientUnregisterPacket;
 import me.fbiflow.gameengine.protocol.packet.packets.server.ProxyStopPacket;
 import me.fbiflow.gameengine.util.LoggerUtil;
-import org.bukkit.event.EventHandler;
 
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static java.lang.String.format;
+
 public class ProxyController implements PacketListener {
 
-    private final SocketDataServer server;
+    private final Server server;
     private final LoggerUtil logger = new LoggerUtil("| [ProxyController] ->");
-    private QueueController queueController;
-    private PartyController partyController;
+    private ProxyQueueController proxyQueueController;
+    private ProxyPartyController proxyPartyController;
 
     private final List<Socket> lobbyControllers = new ArrayList<>();
     private final List<Socket> sessionControllers = new ArrayList<>();
 
-    public ProxyController(SocketDataServer server, List<Class<? extends AbstractGame>> allowedGames) {
-        //TODO: register all allowed games and then check valid when new session controller connects
-        this.server = server;
-        CallbackService.getInstance().registerListener(this.server.getPacketProducer(), this);
+    private final PacketProducer packetProducer = PacketProducer.of(this);
+
+    private final List<Class<? extends AbstractGame>> allowedGames;
+
+    public ProxyController(int port, List<Class<? extends AbstractGame>> allowedGames) {
+        List<String> ids = new ArrayList<>();
+        allowedGames.forEach(game -> {
+            String id = GameManager.getId(game);
+            if (ids.contains(id)) {
+                throw new RuntimeException("trying to register game, but game with same id already registered");
+            }
+            ids.add(id);
+        });
+        this.allowedGames = allowedGames;
+        this.server = new Server(port, packetProducer);
+        PacketHandleService.getInstance().registerListener(this.packetProducer, this);
     }
 
-    protected SocketDataServer getServer() {
+    public PacketProducer getPacketProducer() {
+        return this.packetProducer;
+    }
+
+    protected Server getServer() {
         return this.server;
     }
 
     public void start() {
-        queueController = new QueueController(this);
-        partyController = new PartyController(this);
+        proxyQueueController = new ProxyQueueController(this);
+        proxyPartyController = new ProxyPartyController(this);
         server.start();
     }
 
@@ -66,6 +85,11 @@ public class ProxyController implements PacketListener {
     }
 
     @PacketHandler
+    private void onDataPacket(DataPacket packet, Packet source, Socket sender) {
+        System.out.println("time when packet received: " + System.currentTimeMillis());
+    }
+
+    @PacketHandler
     private void onClientRegisterReceive(ClientRegisterPacket packet, Packet source, Socket sender) {
         if (lobbyControllers.contains(sender) || sessionControllers.contains(sender)) {
             throw new IllegalStateException("received ClientRegisterPacket, but client already registered");
@@ -78,9 +102,24 @@ public class ProxyController implements PacketListener {
                 lobbyControllers.add(sender);
             }
             case SESSION_CONTROLLER -> {
-                //TODO: validate game settings (сравнить экземпляры игр для прокси и контроллера сессий)
+                packet.getAllowedGames().forEach((gameId, hashcode) -> {
+                    List<String> ids = allowedGames.stream().map(GameManager::getId).toList();
+                    if (!ids.contains(gameId)) {
+                        throw new RuntimeException(format("game session registered with game %s, but this game is`nt contains in proxy", gameId));
+                    }
+                    for (Class<? extends AbstractGame> gameType : allowedGames) {
+                        if (!GameManager.getId(gameType).equals(gameId)) {
+                            continue;
+                        }
+                        if (GameManager.hashCode(gameType) != hashcode) {
+                            throw new RuntimeException(format("incorrect hashcode of game %s", gameId));
+                        }
+                        return;
+                    }
+                    throw new RuntimeException("unhandled exception");
+                });
                 if (sessionControllers.contains(sender)) {
-                    throw new IllegalStateException("received ClientUnregisterPacket, but client already registered as session");
+                    throw new IllegalStateException("received ClientRegisterPacket, but client already registered as session");
                 }
                 sessionControllers.add(sender);
             }

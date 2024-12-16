@@ -1,31 +1,32 @@
 package me.fbiflow.gameengine.core.controller.proxy;
 
-import me.fbiflow.gameengine.core.model.QueueItem;
 import me.fbiflow.gameengine.core.model.QueueManager;
+import me.fbiflow.gameengine.core.model.WrappedQueueItem;
 import me.fbiflow.gameengine.core.model.game.AbstractGame;
-import me.fbiflow.gameengine.protocol.handle.CallbackService;
+import me.fbiflow.gameengine.protocol.handle.PacketHandleService;
 import me.fbiflow.gameengine.protocol.handle.PacketHandler;
 import me.fbiflow.gameengine.protocol.handle.PacketListener;
 import me.fbiflow.gameengine.protocol.packet.Packet;
 import me.fbiflow.gameengine.protocol.packet.packets.client.queue.PlayerQueueJoinRequestPacket;
 import me.fbiflow.gameengine.protocol.packet.packets.client.queue.PlayerQueueLeaveRequestPacket;
+import me.fbiflow.gameengine.protocol.packet.packets.server.queue.QueueItemUpdatePacket;
 import me.fbiflow.gameengine.protocol.packet.packets.server.session.SessionGetRequestPacket;
 import me.fbiflow.gameengine.util.LoggerUtil;
 
 import java.net.Socket;
 
-public class QueueController implements PacketListener {
+public class ProxyQueueController implements PacketListener {
 
     private final QueueManager queueManager;
 
     private final ProxyController proxy;
 
-    private final LoggerUtil logger = new LoggerUtil("| [QueueController] ->");
+    private final LoggerUtil logger = new LoggerUtil("| [ProxyQueueController] ->");
 
-    public QueueController(ProxyController proxy) {
+    public ProxyQueueController(ProxyController proxyController) {
         this.queueManager = new QueueManager();
-        this.proxy = proxy;
-        CallbackService.getInstance().registerListener(proxy.getServer().getPacketProducer(), this);
+        this.proxy = proxyController;
+        PacketHandleService.getInstance().registerListener(proxyController.getPacketProducer(), this);
     }
 
     public QueueManager getQueueManager() {
@@ -34,13 +35,12 @@ public class QueueController implements PacketListener {
 
     @PacketHandler
     private void onPlayerQueueJoinRequestPacketReceive(PlayerQueueJoinRequestPacket packet, Packet source, Socket sender) {
-        QueueItem queueItem = queueManager.joinQueue(packet.getWhoJoins(), packet.getGameType());
-        if (queueItem == null) {
+        WrappedQueueItem wrappedQueueItem = queueManager.joinQueue(packet.getWhoJoins(), packet.getGameType());
+        if (wrappedQueueItem.queueItem == null) {
             return;
         }
-        if (queueItem.isValid()) {
-            findFreeSession(queueItem.getGameType());
-        }
+        var response = new QueueItemUpdatePacket(wrappedQueueItem.queueItem);
+        proxy.sendPacket(sender, Packet.of(response));
     }
 
     @PacketHandler
@@ -49,6 +49,7 @@ public class QueueController implements PacketListener {
     }
 
     private void findFreeSession(Class<? extends AbstractGame> gameType) {
+        System.err.println("Called find free session");
         var packet = new SessionGetRequestPacket(gameType);
 
     }

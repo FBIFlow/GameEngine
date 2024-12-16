@@ -1,13 +1,16 @@
 package me.fbiflow;
 
-import me.fbiflow.gameengine.core.controller.LobbyController;
-import me.fbiflow.gameengine.core.controller.SessionController;
+import me.fbiflow.gameengine.core.controller.lobby.LobbyController;
+import me.fbiflow.gameengine.core.controller.session.SessionController;
 import me.fbiflow.gameengine.core.controller.proxy.ProxyController;
-import me.fbiflow.gameengine.core.model.SessionHolder;
+import me.fbiflow.gameengine.core.controller.session.SessionHolder;
 import me.fbiflow.gameengine.core.model.game.games.Pillars;
-import me.fbiflow.gameengine.protocol.communication.SocketDataClient;
-import me.fbiflow.gameengine.protocol.communication.SocketDataServer;
+import me.fbiflow.gameengine.core.model.wrapper.internal.Player;
+import me.fbiflow.gameengine.core.model.wrapper.internal.event.events.PlayerJoinEvent;
+import me.fbiflow.gameengine.protocol.communication.Client;
+import me.fbiflow.gameengine.protocol.communication.Server;
 import me.fbiflow.gameengine.protocol.packet.Packet;
+import me.fbiflow.gameengine.protocol.packet.packets.DataPacket;
 import me.fbiflow.gameengine.protocol.packet.packets.client.queue.PlayerQueueJoinRequestPacket;
 
 import java.util.List;
@@ -16,12 +19,14 @@ import static me.fbiflow.test.PlayerMock.getPlayer;
 
 public class Loader {
 
-    private static final ProxyController proxyController
-            = new ProxyController(new SocketDataServer(32544), List.of(Pillars.class));
-    private static final LobbyController lobbyController
-            = new LobbyController(new SocketDataClient("localhost", 32544));
-    private static final SessionController sessionController
-            = new SessionController(new SocketDataClient("localhost", 32544),
+    private final ProxyController proxyController
+            = new ProxyController(32544, List.of(Pillars.class));
+
+    private final LobbyController lobbyController
+            = new LobbyController("127.0.0.1", 32544);
+
+    private final SessionController sessionController
+            = new SessionController("127.0.0.1", 32544,
             List.of(
                     new SessionHolder(List.of(Pillars.class)),
                     new SessionHolder(List.of(Pillars.class)),
@@ -30,39 +35,38 @@ public class Loader {
                     )
     );
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
+        Loader loader = new Loader();
+
+        var proxyController = loader.proxyController;
+        var lobbyController = loader.lobbyController;
+        var sessionController = loader.sessionController;
 
         proxyController.start();
         lobbyController.start();
         sessionController.start();
 
+        Thread.sleep(3000);
+
+        var packet = new PlayerQueueJoinRequestPacket(getPlayer("FBIFlow"), Pillars.class);
+        System.out.println("time before serializing packet: " + System.currentTimeMillis());
+        System.out.println("size of packet is: " + packet.toByteArray().length);
+        System.out.println("time after serializing packet: " + System.currentTimeMillis());
+        lobbyController.getConnection().sendPacket(Packet.of(packet));
+
+        //lobbyController.getEventProducer().produce(new PlayerJoinEvent(getPlayer("FBIFlow")));
+        /*lobbyController.getConnection().sendPacket(
+                Packet.of(new DataPacket())
+        );
+        System.out.println("time after sending 1 packet: " + System.currentTimeMillis());
+
         lobbyController.getConnection().sendPacket(
-                Packet.of(new PlayerQueueJoinRequestPacket(
-                        getPlayer("FBIFlow"), Pillars.class
-                )));
-        lobbyController.getConnection().sendPacket(
-                Packet.of(new PlayerQueueJoinRequestPacket(
-                        getPlayer("Meneleet"), Pillars.class
-                )));
-        lobbyController.getConnection().sendPacket(
-                Packet.of(new PlayerQueueJoinRequestPacket(
-                        getPlayer("MoDDuRat"), Pillars.class
-                )));
-        lobbyController.getConnection().sendPacket(
-                Packet.of(new PlayerQueueJoinRequestPacket(
-                        getPlayer("FBIFlow"), Pillars.class
-                )));
-        lobbyController.getConnection().sendPacket(
-                Packet.of(new PlayerQueueJoinRequestPacket(
-                        getPlayer("Meneleet"), Pillars.class
-                )));
-        lobbyController.getConnection().sendPacket(
-                Packet.of(new PlayerQueueJoinRequestPacket(
-                        getPlayer("MoDDuRat"), Pillars.class
-                )));
+                Packet.of(new DataPacket())
+        );
+        System.out.println("time after sending 2 packet: " + System.currentTimeMillis());*/
     }
 
-    private static void onDisable() {
+    private void onDisable() {
         proxyController.stop();
         lobbyController.stop();
         sessionController.stop();

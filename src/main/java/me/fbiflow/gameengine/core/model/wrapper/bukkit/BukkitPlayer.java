@@ -28,4 +28,5 @@ public class BukkitPlayer implements Player {
     public void sendMessage(Component message) {
         player.sendMessage(message);
     }
+
 }

@@ -15,29 +15,29 @@ import java.util.*;
 
 import static java.lang.String.format;
 
-public class CallbackService {
+public class PacketHandleService {
 
-    private static CallbackService instance;
+    private static PacketHandleService instance;
 
     private final Map<PacketProducer, List<PacketListener>> listenersMap = Collections.synchronizedMap(new HashMap<>());
 
     private final LoggerUtil logger = new LoggerUtil(format("| [%s] ->", this.getClass().getSimpleName()));
 
-    private CallbackService() {
+    private PacketHandleService() {
         start();
     }
 
-    public static CallbackService getInstance() {
+    public static PacketHandleService getInstance() {
         if (instance == null) {
-            instance = new CallbackService();
+            instance = new PacketHandleService();
         }
         return instance;
     }
 
-    private static @Nullable Method getMethod(PacketListener listener, AbstractPacket abstractPacket) {
-        Method[] methods = listener.getClass().getDeclaredMethods();
-        Method method = null;
-        for (Method m : methods) {
+    private static @Nullable Method[] getMethod(PacketListener listener, AbstractPacket abstractPacket) {
+        Method[] declaredMethods = listener.getClass().getDeclaredMethods();
+        Method[] handlers = new Method[declaredMethods.length];
+        for (Method m : declaredMethods) {
             if (!m.isAnnotationPresent(PacketHandler.class)) {
                 continue;
             }
@@ -50,9 +50,15 @@ public class CallbackService {
                     || parameters[2].getType() != Socket.class) {
                 continue;
             }
-            method = m;
+            for (int i = 0; i < handlers.length; i++) {
+                if (handlers[i] != null) {
+                    continue;
+                }
+                handlers[i] = m;
+                break;
+            }
         }
-        return method;
+        return handlers;
     }
 
     public void registerListener(PacketProducer packetProducer, PacketListener listener) {
@@ -67,7 +73,11 @@ public class CallbackService {
     private void start() {
         Runnable callbackServiceTask = () -> {
             while (true) {
-                for (Map.Entry<PacketProducer, List<PacketListener>> entry : new HashMap<>(listenersMap).entrySet()) {
+                Map<PacketProducer, List<PacketListener>> snapshot;
+                synchronized (listenersMap) {
+                    snapshot = new HashMap<>(listenersMap);
+                }
+                for (Map.Entry<PacketProducer, List<PacketListener>> entry : snapshot.entrySet()) {
                     PacketProducer producer = entry.getKey();
                     List<PacketListener> listeners = entry.getValue();
                     PacketProducer p = producer;
@@ -88,7 +98,6 @@ public class CallbackService {
     }
 
     private void handlePacket(Packet source, Socket sender, PacketListener listener) {
-        //TODO: reflection api to throw all received packets from producer to listeners
         AbstractPacket abstractPacket = null;
         try {
             abstractPacket = (AbstractPacket) SerializeUtil.deserialize(source.abstractPacket());
@@ -96,26 +105,34 @@ public class CallbackService {
             throw new RuntimeException(e);
         }
 
-        Method method = getMethod(listener, abstractPacket);
-        if (method == null) {
+        Method[] methods = getMethod(listener, abstractPacket);
+        for (Method method : methods) {
+            if (method == null) {
             /*logger.log(format("Could not to find handler for packet: %s{%s} in %s{%s}",
                     source.packetClass().getSimpleName(),
                     source.hashCode(),
                     listener.getClass().getSimpleName(),
                     listener.hashCode()));*/
-            return;
+                return;
+            }
+            method.setAccessible(true);
+            try {
+                logger.log(format("Handling source: %s{%s} in: %s{%s}...",
+                        source.packetClass().getSimpleName(),
+                        source.hashCode(),
+                        listener.getClass().getSimpleName(),
+                        listener.hashCode()));
+                method.invoke(listener, abstractPacket, source, sender);
+
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                logger.error(format("An error occurred handling source %s{%s} in: %s{%s}",
+                        source.packetClass().getSimpleName(),
+                        source.hashCode(),
+                        listener.getClass().getSimpleName(),
+                        listener.hashCode()));
+                throw new RuntimeException(e);
+            }
+            method.setAccessible(false);
         }
-        logger.log(format("Handled source: %s{%s} in: %s{%s}",
-                source.packetClass().getSimpleName(),
-                source.hashCode(),
-                listener.getClass().getSimpleName(),
-                listener.hashCode()));
-        method.setAccessible(true);
-        try {
-            method.invoke(listener, abstractPacket, source, sender);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
-        method.setAccessible(false);
     }
 }

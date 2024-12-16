@@ -1,4 +1,4 @@
-package me.fbiflow.gameengine.core.controller.service;
+package me.fbiflow.gameengine.core.controller.session;
 
 import me.fbiflow.gameengine.core.model.game.AbstractGame;
 
@@ -17,9 +17,4 @@ public class SessionExecutor {
         }
         this.game = game;
     }
-
-    public void start() {
-        game.onInit();
-    }
-
 }

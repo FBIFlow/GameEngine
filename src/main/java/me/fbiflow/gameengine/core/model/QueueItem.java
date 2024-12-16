@@ -16,12 +16,15 @@ public class QueueItem {
     private int maxPlayers = 48;
 
     {
-        this.uuid = UUID.randomUUID();
         this.members = new ArrayList<>();
     }
 
-    private QueueItem() {
+    private QueueItem(UUID uuid) {
+        this.uuid = uuid;
+    }
 
+    private QueueItem() {
+        this.uuid = UUID.randomUUID();
     }
 
     public UUID getUuid() {
@@ -40,7 +43,7 @@ public class QueueItem {
         return members.size() == maxPlayers;
     }
 
-    protected List<Player> getMembers() {
+    public List<Player> getMembersCopy() {
         return new ArrayList<>(this.members);
     }
 

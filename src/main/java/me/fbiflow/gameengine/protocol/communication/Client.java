@@ -9,42 +9,52 @@ import me.fbiflow.gameengine.util.SerializeUtil;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.UUID;
 
 import static java.lang.String.format;
 
-public class SocketDataClient {
+public class Client {
+
+    private final UUID clientId;
+    private final InetSocketAddress host;
+
+    private final PacketProducer packetProducer;
 
     private Socket socket;
 
     private ObjectInputStream objectInputStream;
     private ObjectOutputStream objectOutputStream;
 
-    private PacketProducer packetProducer;
-
     private LoggerUtil logger = new LoggerUtil("| [SocketDataClient] ->");
 
-    public SocketDataClient(String host, int port) {
+    public Client(String host, int port, PacketProducer packetProducer) {
+        this.clientId = UUID.randomUUID();
+        this.host = new InetSocketAddress(host, port);
+        this.packetProducer = packetProducer;
+    }
+
+    public void start() {
         try {
-            this.socket = new Socket(host, port);
+            this.socket = new Socket(host.getHostName(), host.getPort());
             startPacketListener();
-        } catch (IOException  e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public UUID getClientId() {
+        return this.clientId;
     }
 
     public String getAddress() {
         return socket.toString();
     }
 
-    public PacketProducer getPacketProducer() {
-        if (packetProducer == null) {
-            packetProducer = PacketProducer.of(this);
-        }
-        return packetProducer;
-    }
 
-    public void sendPacket(Packet packet) {
+    public synchronized void sendPacket(Packet packet) {
+        System.err.println("start sending packet: " + System.currentTimeMillis());
         try {
             if (objectOutputStream == null) {
                 objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
@@ -54,11 +64,11 @@ public class SocketDataClient {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        System.err.println("end sending packet: " + System.currentTimeMillis());
     }
 
     private void startPacketListener() {
         Thread packetListener = new Thread(() -> {
-            this.packetProducer = getPacketProducer();
             try {
                 if (objectInputStream == null) {
                     objectInputStream = new ObjectInputStream(socket.getInputStream());
@@ -88,7 +98,7 @@ public class SocketDataClient {
 
     private void logReceive(Packet packet, Socket sender) throws IOException, ClassNotFoundException {
         AbstractPacket abstractPacket = (AbstractPacket) SerializeUtil.deserialize(packet.abstractPacket());
-        logger.log(format("received packet: {\n\t%s{%s}\n\t%s{%s}\n\t{%s}\n\t%s\n}",
+        logger.log(format("Received packet: {\n\t%s{%s}\n\t%s{%s}\n\t{%s}\n\t%s\n}",
                 packet.getClass().getSimpleName(),
                 packet.hashCode(),
                 abstractPacket.getClass().getSimpleName(),

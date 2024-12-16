@@ -1,25 +1,24 @@
 package me.fbiflow.gameengine.core.controller.proxy;
 
 import me.fbiflow.gameengine.core.model.PartyManager;
-import me.fbiflow.gameengine.protocol.handle.CallbackService;
+import me.fbiflow.gameengine.protocol.handle.PacketHandleService;
 import me.fbiflow.gameengine.protocol.handle.PacketHandler;
 import me.fbiflow.gameengine.protocol.handle.PacketListener;
 import me.fbiflow.gameengine.protocol.packet.Packet;
 import me.fbiflow.gameengine.protocol.packet.packets.client.party.*;
-import me.fbiflow.test.PlayerMock;
 
 import java.net.Socket;
 
-public class PartyController implements PacketListener {
+public class ProxyPartyController implements PacketListener {
 
     private final PartyManager partyManager;
 
     private final ProxyController proxy;
 
-    public PartyController(ProxyController proxy) {
+    public ProxyPartyController(ProxyController proxyController) {
         this.partyManager = new PartyManager();
-        this.proxy = proxy;
-        CallbackService.getInstance().registerListener(proxy.getServer().getPacketProducer(), this);
+        this.proxy = proxyController;
+        PacketHandleService.getInstance().registerListener(proxyController.getPacketProducer(), this);
     }
 
     @PacketHandler

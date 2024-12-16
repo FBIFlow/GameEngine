@@ -7,11 +7,6 @@ import java.util.Map;
 public class Pillars extends AbstractGame {
 
     @Override
-    public String getId() {
-        return "Pillars";
-    }
-
-    @Override
     public int getMaxPlayers() {
         return 8;
     }
@@ -19,6 +14,14 @@ public class Pillars extends AbstractGame {
     @Override
     public int getRequiredPlayers() {
         return 4;
+    }
+
+    @Override
+    public Map<Integer, Integer> getPlayerTimerMap() {
+        return Map.of(
+                4, 10,
+                6, 5
+        );
     }
 
     @Override

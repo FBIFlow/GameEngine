@@ -10,16 +10,15 @@ public class PacketProducer {
 
     private static Map<Object, PacketProducer> producers = new HashMap<>();
 
-    private Object socketDataReceiver;
-
     private final Map<Socket, List<Packet>> receivedPackets = new HashMap<>();
 
-    private PacketProducer(Object socketDataReceiver) {
-        this.socketDataReceiver = socketDataReceiver;
-    }
-
     public static PacketProducer of(Object link) {
-        return producers.getOrDefault(link, new PacketProducer(link));
+        if (producers.containsKey(link)) {
+            return producers.get(link);
+        }
+        PacketProducer producer = new PacketProducer();
+        producers.put(link, producer);
+        return producer;
     }
 
     public void produce(Packet packet, Socket sender) {

@@ -6,9 +6,11 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class ClientRegisterPacket extends AbstractPacket {
 
+    private final UUID clientId;
     private final ClientType clientType;
     /**
      * k - game id <br>
@@ -16,7 +18,8 @@ public class ClientRegisterPacket extends AbstractPacket {
      */
     private Map<String, Integer> allowedGames = null;
 
-    public ClientRegisterPacket(ClientType clientType, @Nullable Map<String, Integer> allowedGames) {
+    public ClientRegisterPacket(UUID clientId, ClientType clientType, @Nullable Map<String, Integer> allowedGames) {
+        this.clientId = clientId;
         this.clientType = clientType;
         if (clientType != ClientType.SESSION_CONTROLLER) {
             return;
