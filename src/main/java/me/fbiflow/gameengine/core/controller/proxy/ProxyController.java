@@ -9,7 +9,6 @@ import me.fbiflow.gameengine.protocol.handle.PacketHandler;
 import me.fbiflow.gameengine.protocol.handle.PacketListener;
 import me.fbiflow.gameengine.protocol.handle.PacketProducer;
 import me.fbiflow.gameengine.protocol.packet.Packet;
-import me.fbiflow.gameengine.protocol.packet.packets.DataPacket;
 import me.fbiflow.gameengine.protocol.packet.packets.client.ClientRegisterPacket;
 import me.fbiflow.gameengine.protocol.packet.packets.client.ClientUnregisterPacket;
 import me.fbiflow.gameengine.protocol.packet.packets.server.ProxyStopPacket;
@@ -82,11 +81,6 @@ public class ProxyController implements PacketListener {
             case LOBBY_CONTROLLER -> lobbyControllers.forEach(lobbySocket -> sendPacket(lobbySocket, packet));
             case SESSION_CONTROLLER -> sessionControllers.forEach(lobbySocket -> sendPacket(lobbySocket, packet));
         }
-    }
-
-    @PacketHandler
-    private void onDataPacket(DataPacket packet, Packet source, Socket sender) {
-        System.out.println("time when packet received: " + System.currentTimeMillis());
     }
 
     @PacketHandler

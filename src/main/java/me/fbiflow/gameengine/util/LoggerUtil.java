@@ -17,8 +17,8 @@ public class LoggerUtil {
 
     public void log(String text) {
         LocalDateTime t = LocalDateTime.now();
-        String time = format("[%s.%s.%s] %s:%s:%s",
-                t.getYear(), t.getMonthValue(), t.getDayOfMonth(), t.getHour(), t.getMinute(), t.getSecond());
+        String time = format("[%s.%s.%s] %s:%s:%s:%s",
+                t.getYear(), t.getMonthValue(), t.getDayOfMonth(), t.getHour(), t.getMinute(), t.getSecond(), t.getNano());
         System.out.printf("%s %s %s%n", time, prefix, text);
     }
 

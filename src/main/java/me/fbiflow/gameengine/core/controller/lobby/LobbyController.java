@@ -24,6 +24,7 @@ public class LobbyController implements PacketListener, EventListener {
 
     private final Client serverConnection;
     private final LobbyQueueController lobbyQueueController;
+    private final LobbyEventListener lobbyEventListener;
 
     private final PacketProducer packetProducer = PacketProducer.of(this);
     private final EventProducer eventProducer = EventProducer.of(this);
@@ -34,9 +35,9 @@ public class LobbyController implements PacketListener, EventListener {
         this.serverConnection = new Client(host, port, packetProducer);
 
         this.lobbyQueueController = new LobbyQueueController(this);
+        this.lobbyEventListener = new LobbyEventListener(this);
 
         PacketHandleService.getInstance().registerListener(packetProducer, this);
-        EventHandleService.getInstance().registerListener(eventProducer, this);
     }
 
     public EventProducer getEventProducer() {
@@ -63,7 +64,6 @@ public class LobbyController implements PacketListener, EventListener {
     }
 
     public Client getConnection() {
-        System.err.println("time when calling getConnection: " + System.currentTimeMillis());
         return this.serverConnection;
     }
 

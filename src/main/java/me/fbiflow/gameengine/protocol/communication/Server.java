@@ -55,7 +55,7 @@ public class Server {
         connectionListener.start();
     }
 
-    public void sendPacket(Socket socket, Packet packet) {
+    public synchronized void sendPacket(Socket socket, Packet packet) {
         try {
             if (objectOutputStream == null) {
                 objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
@@ -84,7 +84,7 @@ public class Server {
     }
 
     private void logReceive(Packet packet, Socket sender) throws IOException, ClassNotFoundException {
-        AbstractPacket abstractPacket = (AbstractPacket) SerializeUtil.deserialize(packet.abstractPacket());
+        AbstractPacket abstractPacket = (AbstractPacket) SerializeUtil.fromByteArray(packet.abstractPacket());
         logger.log(format("Received packet: {\n\t%s{%s}\n\t%s{%s}\n\t{%s}\n\t%s\n}",
                 packet.getClass().getSimpleName(),
                 packet.hashCode(),

@@ -24,7 +24,6 @@ public class EventProducer {
     }
 
     public void produce(AbstractEvent abstractEvent) {
-        System.err.println("produced new event");
         if (abstractEvents.contains(abstractEvent)) {
             throw new RuntimeException("event already exists");
         }

@@ -5,17 +5,16 @@ import me.fbiflow.gameengine.core.controller.session.SessionController;
 import me.fbiflow.gameengine.core.controller.proxy.ProxyController;
 import me.fbiflow.gameengine.core.controller.session.SessionHolder;
 import me.fbiflow.gameengine.core.model.game.games.Pillars;
-import me.fbiflow.gameengine.core.model.wrapper.internal.Player;
+import me.fbiflow.gameengine.core.model.wrapper.ServerContainer;
 import me.fbiflow.gameengine.core.model.wrapper.internal.event.events.PlayerJoinEvent;
-import me.fbiflow.gameengine.protocol.communication.Client;
-import me.fbiflow.gameengine.protocol.communication.Server;
 import me.fbiflow.gameengine.protocol.packet.Packet;
-import me.fbiflow.gameengine.protocol.packet.packets.DataPacket;
-import me.fbiflow.gameengine.protocol.packet.packets.client.queue.PlayerQueueJoinRequestPacket;
+import me.fbiflow.gameengine.protocol.packet.packets.CleanPacket;
+import me.fbiflow.test.PlayerMock;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.List;
-
-import static me.fbiflow.test.PlayerMock.getPlayer;
 
 public class Loader {
 
@@ -35,8 +34,10 @@ public class Loader {
                     )
     );
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, IOException {
         Loader loader = new Loader();
+
+        var serverContainer = new ServerContainer(ServerContainer.ContainerType.BUKKIT);
 
         var proxyController = loader.proxyController;
         var lobbyController = loader.lobbyController;
@@ -46,24 +47,22 @@ public class Loader {
         lobbyController.start();
         sessionController.start();
 
-        Thread.sleep(3000);
+        lobbyController.getEventProducer().produce(new PlayerJoinEvent(PlayerMock.getPlayer("FBIFlow")));
 
-        var packet = new PlayerQueueJoinRequestPacket(getPlayer("FBIFlow"), Pillars.class);
-        System.out.println("time before serializing packet: " + System.currentTimeMillis());
-        System.out.println("size of packet is: " + packet.toByteArray().length);
-        System.out.println("time after serializing packet: " + System.currentTimeMillis());
-        lobbyController.getConnection().sendPacket(Packet.of(packet));
+        var cleanPacket = new CleanPacket();
+        var packet = Packet.of(cleanPacket);
 
-        //lobbyController.getEventProducer().produce(new PlayerJoinEvent(getPlayer("FBIFlow")));
-        /*lobbyController.getConnection().sendPacket(
-                Packet.of(new DataPacket())
-        );
-        System.out.println("time after sending 1 packet: " + System.currentTimeMillis());
+        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+             ObjectOutputStream tempOutputStream = new ObjectOutputStream(byteArrayOutputStream)) {
 
-        lobbyController.getConnection().sendPacket(
-                Packet.of(new DataPacket())
-        );
-        System.out.println("time after sending 2 packet: " + System.currentTimeMillis());*/
+            tempOutputStream.writeObject(packet);
+            tempOutputStream.flush();
+
+            System.err.println("packet size is: " + byteArrayOutputStream.size());
+        }
+
+        lobbyController.getConnection().sendPacket(packet);
+
     }
 
     private void onDisable() {

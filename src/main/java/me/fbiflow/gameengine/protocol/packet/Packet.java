@@ -17,7 +17,7 @@ public record Packet(UUID uuid, byte[] abstractPacket, Class<? extends AbstractP
 
     public static Packet of(AbstractPacket packet) {
         try {
-            return new Packet(UUID.randomUUID(), SerializeUtil.serialize(packet), packet.getClass());
+            return new Packet(UUID.randomUUID(), SerializeUtil.toByteArray(packet), packet.getClass());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

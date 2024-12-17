@@ -9,7 +9,7 @@ public abstract class AbstractPacket implements Serializable {
 
     public byte[] toByteArray() {
         try {
-            return SerializeUtil.serialize(this);
+            return SerializeUtil.toByteArray(this);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

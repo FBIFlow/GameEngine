@@ -1,7 +1,7 @@
-package me.fbiflow.gameengine.core.model.wrapper.bukkit.event.handler;
+package me.fbiflow.gameengine.core.model.wrapper.bukkit.event.handle;
 
 import me.fbiflow.gameengine.core.controller.event.EventProducer;
-import me.fbiflow.gameengine.core.model.wrapper.bukkit.BukkitPlayerManager;
+import me.fbiflow.gameengine.core.model.wrapper.bukkit.manager.BukkitPlayerManager;
 import me.fbiflow.gameengine.core.model.wrapper.internal.event.events.PlayerJoinEvent;
 import me.fbiflow.gameengine.core.model.wrapper.internal.event.handle.AbstractServerEventHandler;
 import org.bukkit.Bukkit;
@@ -15,7 +15,7 @@ public class BukkitAbstractServerEventHandler extends AbstractServerEventHandler
     private final BukkitPlayerManager playerManager;
 
     {
-        this.playerManager = BukkitPlayerManager.getInstance();
+        this.playerManager = new BukkitPlayerManager();
     }
 
     public BukkitAbstractServerEventHandler(Plugin plugin, EventProducer eventProducer) {

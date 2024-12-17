@@ -100,7 +100,7 @@ public class PacketHandleService {
     private void handlePacket(Packet source, Socket sender, PacketListener listener) {
         AbstractPacket abstractPacket = null;
         try {
-            abstractPacket = (AbstractPacket) SerializeUtil.deserialize(source.abstractPacket());
+            abstractPacket = (AbstractPacket) SerializeUtil.fromByteArray(source.abstractPacket());
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }

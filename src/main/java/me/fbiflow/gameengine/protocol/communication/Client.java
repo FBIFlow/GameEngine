@@ -54,7 +54,6 @@ public class Client {
 
 
     public synchronized void sendPacket(Packet packet) {
-        System.err.println("start sending packet: " + System.currentTimeMillis());
         try {
             if (objectOutputStream == null) {
                 objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
@@ -64,7 +63,6 @@ public class Client {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        System.err.println("end sending packet: " + System.currentTimeMillis());
     }
 
     private void startPacketListener() {
@@ -97,7 +95,7 @@ public class Client {
     }
 
     private void logReceive(Packet packet, Socket sender) throws IOException, ClassNotFoundException {
-        AbstractPacket abstractPacket = (AbstractPacket) SerializeUtil.deserialize(packet.abstractPacket());
+        AbstractPacket abstractPacket = (AbstractPacket) SerializeUtil.fromByteArray(packet.abstractPacket());
         logger.log(format("Received packet: {\n\t%s{%s}\n\t%s{%s}\n\t{%s}\n\t%s\n}",
                 packet.getClass().getSimpleName(),
                 packet.hashCode(),
